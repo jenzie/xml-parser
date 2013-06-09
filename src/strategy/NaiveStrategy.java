@@ -33,20 +33,28 @@ public class NaiveStrategy implements ApproximationStrategy {
 	 */
 	public ArrayList<String> approximate(
 			ArrayList<String> file, String find, String replace) {
-		ArrayList<String> result = file;
-		String[] tempLine;
+
+		ArrayList<String> result = new ArrayList<String>();
+		String[] tempPiece, tempLine;
 		String tempResult = "";
 
-		for(String line : file) {
-			tempLine = line.split("<");
-			for(String part : tempLine) {
-				if(part.equals(find))
-					part = replace;
-				tempResult += part;
-			}
-			line = tempResult;
-		}
+		for(int n = 0; n < file.size(); n++) {
+			tempLine = file.get(n).split("<");
+			for(int i = 1; i < tempLine.length; i++) {
+				tempLine[i] = "<" + tempLine[i];
 
+				tempPiece = tempLine[i].split(">");
+				for(int j = 0; j < tempPiece.length; j++) {
+					tempPiece[j] = tempPiece[j] + ">";
+
+					if(tempPiece[j].equals(find))
+						tempPiece[j] = replace;
+				}
+				if(tempLine[i] != null)
+					tempResult += tempLine[i];
+			}
+			result.add(tempResult);
+		}
 		return result;
 	}
 }
