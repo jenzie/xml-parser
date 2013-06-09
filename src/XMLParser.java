@@ -10,11 +10,11 @@ import strategy.LoopStrategy;
 import strategy.NaiveStrategy;
 import strategy.RandomStrategy;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
-import java.io.PrintWriter;
 
 public class XMLParser {
 	private static final String FILE_EXTENSION = ".xml";
@@ -68,9 +68,9 @@ public class XMLParser {
 		Thread.sleep(1000);
 		getOutFile(results[0]);
 		Thread.sleep(1000);
-		getOutFile(results[1]);
+		//getOutFile(results[1]);
 		Thread.sleep(1000);
-		getOutFile(results[2]);
+		//getOutFile(results[2]);
 
 		System.out.println("Writing complete.");
 	}
@@ -101,6 +101,23 @@ public class XMLParser {
 	}
 
 	private void getOutFile(ArrayList<String> result) {
+		// produce unique file names
+		String filename =
+				XMLFile.substring(0, XMLFile.length() - FILE_EXTENSION.length());
+		SimpleDateFormat dateFormat =
+				new SimpleDateFormat("MMddHHmmss");
+		filename += "_" + dateFormat.format(new Date()) + FILE_EXTENSION;
 
+		try {
+			out = new PrintWriter(new FileWriter(new File("output", filename)));
+		} catch (IOException ioe) {
+			System.err.println("IOException: " +
+					"Could not create print writer for /results/" + XMLFile);
+		}
+		out.flush();
+		for(int i = 0; i < result.size(); i++)
+			out.write(result.get(i) + "\r\n");
+		out.flush();
+		out.close();
 	}
 }
