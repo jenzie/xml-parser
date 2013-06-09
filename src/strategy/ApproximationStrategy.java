@@ -1,5 +1,7 @@
 package strategy;
 
+import java.util.ArrayList;
+
 /**
  * @author: Jenny Zhen; jenny.zhen@rit.edu
  * date: 06.09.2013
@@ -21,5 +23,6 @@ public interface ApproximationStrategy {
 	 * @return the root node of the modified tree, which is necessary for
 	 * comparing results of multiple strategies.
 	 */
-	public String[] approximate(String[] file, String find, String replace);
+	public ArrayList<String> approximate(
+			ArrayList<String> file, String find, String replace);
 }

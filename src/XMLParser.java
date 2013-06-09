@@ -18,6 +18,7 @@ import java.io.PrintWriter;
 
 public class XMLParser {
 	private static final String FILE_EXTENSION = ".xml";
+	private String XMLFile;
 	private Scanner input;
 	private PrintWriter out;
 
@@ -54,7 +55,7 @@ public class XMLParser {
 
 	private void run() throws InterruptedException {
 		ArrayList<String> file = new ArrayList<String>();
-		String[] results;
+		ArrayList<String>[] results;
 
 		while(input.hasNextLine())
 			file.add(input.nextLine());
@@ -73,10 +74,10 @@ public class XMLParser {
 		System.out.println("Writing complete.");
 	}
 
-	private String[] performApproximation(
+	private ArrayList<String>[] performApproximation(
 			ArrayList<String> file, String find, String replace) {
 
-		String[] results = new String[3];
+		ArrayList<String>[] results = new ArrayList[3];
 
 		// create all strategy objects
 		ApproximationStrategy naive = new NaiveStrategy();
@@ -98,7 +99,7 @@ public class XMLParser {
 		return results;
 	}
 
-	private void getOutFile(String result) {
+	private void getOutFile(ArrayList<String> result) {
 
 	}
 }

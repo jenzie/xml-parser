@@ -1,11 +1,13 @@
-package strategy;
-
 /**
  * @author: Jenny Zhen; jenny.zhen@rit.edu
  * date: 06.09.2013
  * language: Java
  * project: xml-parser
  */
+
+package strategy;
+
+import java.util.ArrayList;
 
 public class RandomStrategy implements ApproximationStrategy {
 	private int count;
@@ -29,8 +31,9 @@ public class RandomStrategy implements ApproximationStrategy {
 	 * @return the root node of the modified tree, which is necessary for
 	 * comparing results of multiple strategies.
 	 */
-	public String[] approximate(String[] file, String find, String replace) {
-		String[] result = file;
+	public ArrayList<String> approximate(
+			ArrayList<String> file, String find, String replace) {
+		ArrayList<String> result = file;
 		return result;
 	}
 }
