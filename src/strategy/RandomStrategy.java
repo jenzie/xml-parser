@@ -41,7 +41,10 @@ public class RandomStrategy implements ApproximationStrategy {
 
 		ArrayList<String> result = new ArrayList<String>();
 		ArrayList<String> indices = this.countTotal(file, find);
-		int ncount = this.totalCount/2; // number of variables to replace
+
+		// number of variables to replace
+		int ncount = this.totalCount/2;
+		
 		Random generator = new Random();
 		String[] tempIndices;
 		int index, line, piece;
