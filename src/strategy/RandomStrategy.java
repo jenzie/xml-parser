@@ -10,6 +10,7 @@ package strategy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class RandomStrategy implements ApproximationStrategy {
 	private int count;
@@ -39,6 +40,7 @@ public class RandomStrategy implements ApproximationStrategy {
 
 		ArrayList<String> result = new ArrayList<String>();
 		Map indices = this.countTotal(file, find);
+		Random generator = new Random();
 
 		return result;
 	}
@@ -72,6 +74,7 @@ public class RandomStrategy implements ApproximationStrategy {
 				}
 			}
 		}
+		System.out.println("total: " + totalCount);
 		return indices;
 	}
 }
