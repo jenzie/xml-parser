@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" language="C++" filename="OriginalSourceCode\MonteCarlo.cpp"><cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"Random.h"</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;stdio.h&gt;</cpp:file></cpp:include>
+
+<comment type="block">/**
+ Estimate Pi by approximating the area of a circle.
+
+ How: generate N random numbers in the unit square, (0,0) to (1,1)
+ and see how are within a radius of 1 or less, i.e.
+ &lt;pre&gt;  
+
+ sqrt(x^2 + y^2) &lt; r
+
+ &lt;/pre&gt;
+  since the radius is 1.0, we can square both sides
+  and avoid a sqrt() computation:
+  &lt;pre&gt;
+
+    x^2 + y^2 &lt;= 1.0
+
+  &lt;/pre&gt;
+  this area under the curve is (Pi * r^2)/ 4.0,
+  and the area of the unit of square is 1.0,
+  so Pi can be approximated by 
+  &lt;pre&gt;
+                # points with x^2+y^2 &lt; 1
+     Pi =~      --------------------------  * 4.0
+                     total # points
+
+  &lt;/pre&gt;
+
+*/</comment>
+
+<decl_stmt><decl><type><name>static</name> <name>const</name> <name>int</name></type> <name>SEED</name> =<init> <expr>113</expr></init></decl>;</decl_stmt>
+
+
+    <function><type><name>double</name></type> <name>MonteCarlo_num_flops</name><parameter_list>(<param><decl><type><name>int</name></type> <name>Num_samples</name></decl></param>)</parameter_list>
+    <block>{
+        <comment type="block">/* 3 flops in x^2+y^2 and 1 flop in random routine */</comment>
+
+        <return>return <expr>((<name>double</name>) <name>Num_samples</name>)* 4.0</expr>;</return>
+
+    }</block></function>
+
+    
+<comment type="line">// MODIFIED FOR TEST CODE</comment>
+<function><type><name>double</name></type> <name>MonteCarlo_integrate</name><parameter_list>(<param><decl><type><name>int</name></type> <name>Num_samples</name></decl></param>, <param><decl><type><name>int</name></type> <name>print</name></decl></param>)</parameter_list>
+    <block>{
+
+
+        <decl_stmt><decl><type><name>Random</name></type> <name>R</name> =<init> <expr><call><name>new_Random_seed</name><argument_list>(<argument><expr><name>SEED</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+
+
+        <decl_stmt><decl><type><name>int</name></type> <name>under_curve</name> =<init> <expr>0</expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>count</name></decl>;</decl_stmt>
+
+        <for>for (<init><expr><name>count</name>=0</expr>;</init> <condition><expr><name>count</name>&lt;<name>Num_samples</name></expr>;</condition> <incr><expr><name>count</name>++</expr></incr>)
+        <block>{
+            <decl_stmt><decl><type><name>double</name></type> <name>x</name>=<init> <expr><call><name>Random_nextDouble</name><argument_list>(<argument><expr><name>R</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+            <decl_stmt><decl><type><name>double</name></type> <name>y</name>=<init> <expr><call><name>Random_nextDouble</name><argument_list>(<argument><expr><name>R</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+
+            <if>if <condition>( <expr><name>x</name>*<name>x</name> + <name>y</name>*<name>y</name> &lt;= 1.0</expr>)</condition><then>
+                 <expr_stmt><expr><name>under_curve</name> ++</expr>;</expr_stmt></then></if>
+            
+        }</block></for>
+
+        <expr_stmt><expr><call><name>Random_delete</name><argument_list>(<argument><expr><name>R</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+	<comment type="line">// ADDED FOR TEST CODE print results</comment>
+	<if>if<condition>( <expr><name>print</name></expr> )</condition><then>
+	  <block>{
+	    <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"\n%d\n"</expr></argument>, <argument><expr><name>under_curve</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+	  }</block></then></if>
+
+        <return>return <expr>((<name>double</name>) <name>under_curve</name> / <name>Num_samples</name>) * 4.0</expr>;</return>
+    }</block></function>
+
+
+</unit>

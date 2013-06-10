@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" language="C++" filename="SciMark\kernel.cpp"><cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;stdio.h&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;stdlib.h&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"LU.h"</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"FFT.h"</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"SOR.h"</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"MonteCarlo.h"</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"LU.h"</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"Random.h"</cpp:file></cpp:include> 
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"Stopwatch.h"</cpp:file></cpp:include>  
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"SparseCompRow.h"</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"array.h"</cpp:file></cpp:include>
+
+
+    <function><type><name>double</name></type> <name>kernel_measureFFT</name><parameter_list>(<param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>double</name></type> <name>mintim</name></decl></param>, <param><decl><type><name>Random</name></type> <name>R</name></decl></param>)</parameter_list>
+    <block>{
+        <comment type="block">/* initialize FFT data as complex (N real/img pairs) */</comment>
+
+        <decl_stmt><decl><type><name>int</name></type> <name>twoN</name> =<init> <expr>2*<name>N</name></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>double</name> *</type><name>x</name> =<init> <expr><call><name>RandomVector</name><argument_list>(<argument><expr><name>twoN</name></expr></argument>, <argument><expr><name>R</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>long</name></type> <name>cycles</name> =<init> <expr>1</expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>Stopwatch</name></type> <name>Q</name> =<init> <expr><call><name>new_Stopwatch</name><argument_list>()</argument_list></call></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>i</name>=<init><expr>0</expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>double</name></type> <name>result</name> =<init> <expr>0.0</expr></init></decl>;</decl_stmt>
+	<comment type="line">// ADDED TEST VARIABLE</comment>
+	<decl_stmt><decl><type><name>int</name></type> <name>printResult</name> =<init> <expr>1</expr></init></decl>;</decl_stmt>
+	
+	<expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"\n%s\n\n"</expr></argument>, <argument><expr>"Starting FFT"</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+        <while>while<condition>(<expr>1</expr>)</condition>
+        <block>{
+            <expr_stmt><expr><call><name>Stopwatch_start</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+            <for>for (<init><expr><name>i</name>=0</expr>;</init> <condition><expr><name>i</name>&lt;<name>cycles</name></expr>;</condition> <incr><expr><name>i</name>++</expr></incr>)
+            <block>{
+	      <comment type="line">// MODIFIED FOR TEST CODE</comment>
+	      <expr_stmt><expr><call><name>FFT_transform</name><argument_list>(<argument><expr><name>twoN</name></expr></argument>, <argument><expr><name>x</name></expr></argument>, <argument><expr><name>printResult</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>     <comment type="block">/* forward transform */</comment>
+	      <expr_stmt><expr><call><name>FFT_inverse</name><argument_list>(<argument><expr><name>twoN</name></expr></argument>, <argument><expr><name>x</name></expr></argument>, <argument><expr><name>printResult</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>       <comment type="block">/* backward transform */</comment>
+	      <expr_stmt><expr><name>printResult</name> = 0</expr>;</expr_stmt> <comment type="block">/*only print result once*/</comment>
+            }</block></for>
+            <expr_stmt><expr><call><name>Stopwatch_stop</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+            <if>if <condition>(<expr><call><name>Stopwatch_read</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call> &gt;= <name>mintim</name></expr>)</condition><then>
+                <break>break;</break></then></if>
+
+            <expr_stmt><expr><name>cycles</name> *= 2</expr>;</expr_stmt>
+
+        }</block></while>
+        <comment type="block">/* approx Mflops */</comment>
+
+        <expr_stmt><expr><name>result</name> = <call><name>FFT_num_flops</name><argument_list>(<argument><expr><name>N</name></expr></argument>)</argument_list></call>*<name>cycles</name>/ <call><name>Stopwatch_read</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call> * 1.0e-6</expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>Stopwatch_delete</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name>x</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <return>return <expr><name>result</name></expr>;</return>
+    }</block></function>
+
+    <function><type><name>double</name></type> <name>kernel_measureSOR</name><parameter_list>(<param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>double</name></type> <name>min_time</name></decl></param>, <param><decl><type><name>Random</name></type> <name>R</name></decl></param>)</parameter_list>
+    <block>{
+        <decl_stmt><decl><type><name>double</name> **</type><name>G</name> =<init> <expr><call><name>RandomMatrix</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>N</name></expr></argument>, <argument><expr><name>R</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>double</name></type> <name>result</name> =<init> <expr>0.0</expr></init></decl>;</decl_stmt>
+	<decl_stmt><decl><type><name>int</name></type> <name>print</name> =<init> <expr>1</expr></init></decl>;</decl_stmt>
+	<expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"\n%s\n"</expr></argument>, <argument><expr>"Starting SOR"</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+        <decl_stmt><decl><type><name>Stopwatch</name></type> <name>Q</name> =<init> <expr><call><name>new_Stopwatch</name><argument_list>()</argument_list></call></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>cycles</name>=<init><expr>1</expr></init></decl>;</decl_stmt>
+        <while>while<condition>(<expr>1</expr>)</condition>
+        <block>{
+            <expr_stmt><expr><call><name>Stopwatch_start</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+            <expr_stmt><expr><call><name>SOR_execute</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>N</name></expr></argument>, <argument><expr>1.25</expr></argument>, <argument><expr><name>G</name></expr></argument>, <argument><expr><name>cycles</name></expr></argument>, <argument><expr><name>print</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+	    <expr_stmt><expr><name>print</name> = 0</expr>;</expr_stmt>
+            <expr_stmt><expr><call><name>Stopwatch_stop</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+            <if>if <condition>(<expr><call><name>Stopwatch_read</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call> &gt;= <name>min_time</name></expr>)</condition><then> <break>break;</break></then></if>
+
+            <expr_stmt><expr><name>cycles</name> *= 2</expr>;</expr_stmt>
+        }</block></while>
+        <comment type="block">/* approx Mflops */</comment>
+
+        <expr_stmt><expr><name>result</name> = <call><name>SOR_num_flops</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>N</name></expr></argument>, <argument><expr><name>cycles</name></expr></argument>)</argument_list></call> / <call><name>Stopwatch_read</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call> * 1.0e-6</expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>Stopwatch_delete</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>Array2D_double_delete</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>N</name></expr></argument>, <argument><expr><name>G</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <return>return <expr><name>result</name></expr>;</return>
+
+    }</block></function>
+
+
+
+    <function><type><name>double</name></type> <name>kernel_measureMonteCarlo</name><parameter_list>(<param><decl><type><name>double</name></type> <name>min_time</name></decl></param>, <param><decl><type><name>Random</name></type> <name>R</name></decl></param>)</parameter_list>
+    <block>{
+        <decl_stmt><decl><type><name>double</name></type> <name>result</name> =<init> <expr>0.0</expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>Stopwatch</name></type> <name>Q</name> =<init> <expr><call><name>new_Stopwatch</name><argument_list>()</argument_list></call></expr></init></decl>;</decl_stmt>
+	<decl_stmt><decl><type><name>int</name></type> <name>print</name> =<init> <expr>1</expr></init></decl>;</decl_stmt>
+	<expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"%s\n"</expr></argument>, <argument><expr>"Starting MonteCarlo"</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+        <decl_stmt><decl><type><name>int</name></type> <name>cycles</name>=<init><expr>1</expr></init></decl>;</decl_stmt>
+        <while>while<condition>(<expr>1</expr>)</condition>
+        <block>{
+            <expr_stmt><expr><call><name>Stopwatch_start</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+            <expr_stmt><expr><call><name>MonteCarlo_integrate</name><argument_list>(<argument><expr><name>cycles</name></expr></argument>, <argument><expr><name>print</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+	    <expr_stmt><expr><name>print</name> = 0</expr>;</expr_stmt>
+            <expr_stmt><expr><call><name>Stopwatch_stop</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+            <if>if <condition>(<expr><call><name>Stopwatch_read</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call> &gt;= <name>min_time</name></expr>)</condition><then> <break>break;</break></then></if>
+
+            <expr_stmt><expr><name>cycles</name> *= 2</expr>;</expr_stmt>
+        }</block></while>
+        <comment type="block">/* approx Mflops */</comment>
+        <expr_stmt><expr><name>result</name> = <call><name>MonteCarlo_num_flops</name><argument_list>(<argument><expr><name>cycles</name></expr></argument>)</argument_list></call> / <call><name>Stopwatch_read</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call> * 1.0e-6</expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>Stopwatch_delete</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <return>return <expr><name>result</name></expr>;</return>
+    }</block></function>
+
+
+    <function><type><name>double</name></type> <name>kernel_measureSparseMatMult</name><parameter_list>(<param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>int</name></type> <name>nz</name></decl></param>, 
+            <param><decl><type><name>double</name></type> <name>min_time</name></decl></param>, <param><decl><type><name>Random</name></type> <name>R</name></decl></param>)</parameter_list>
+    <block>{
+        <comment type="block">/* initialize vector multipliers and storage for result */</comment>
+        <comment type="block">/* y = A*y;  */</comment>
+
+        <decl_stmt><decl><type><name>double</name> *</type><name>x</name> =<init> <expr><call><name>RandomVector</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>R</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>double</name> *</type><name>y</name> =<init> <expr>(<name>double</name>*) <call><name>malloc</name><argument_list>(<argument><expr><call><name>sizeof</name><argument_list>(<argument><expr><name>double</name></expr></argument>)</argument_list></call>*<name>N</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+
+        <decl_stmt><decl><type><name>double</name></type> <name>result</name> =<init> <expr>0.0</expr></init></decl>;</decl_stmt>
+
+<cpp:if>#<cpp:directive>if</cpp:directive> <expr>0</expr></cpp:if>
+        <comment type="line">// initialize square sparse matrix</comment>
+        <comment type="line">//</comment>
+        <comment type="line">// for this test, we create a sparse matrix with M/nz nonzeros</comment>
+        <comment type="line">// per row, with spaced-out evenly between the begining of the</comment>
+        <comment type="line">// row to the main diagonal.  Thus, the resulting pattern looks</comment>
+        <comment type="line">// like</comment>
+        <comment type="line">//             +-----------------+</comment>
+        <comment type="line">//             +*                +</comment>
+        <comment type="line">//             +***              +</comment>
+        <comment type="line">//             +* * *            +</comment>
+        <comment type="line">//             +** *  *          +</comment>
+        <comment type="line">//             +**  *   *        +</comment>
+        <comment type="line">//             +* *   *   *      +</comment>
+        <comment type="line">//             +*  *   *    *    +</comment>
+        <comment type="line">//             +*   *    *    *  + </comment>
+        <comment type="line">//             +-----------------+</comment>
+        <comment type="line">//</comment>
+        <comment type="line">// (as best reproducible with integer artihmetic)</comment>
+        <comment type="line">// Note that the first nr rows will have elements past</comment>
+        <comment type="line">// the diagonal.</comment>
+<cpp:endif>#<cpp:directive>endif</cpp:directive></cpp:endif>
+
+        <decl_stmt><decl><type><name>int</name></type> <name>nr</name> =<init> <expr><name>nz</name>/<name>N</name></expr></init></decl>;</decl_stmt>      <comment type="block">/* average number of nonzeros per row  */</comment>
+        <decl_stmt><decl><type><name>int</name></type> <name>anz</name> =<init> <expr><name>nr</name> *<name>N</name></expr></init></decl>;</decl_stmt>    <comment type="block">/* _actual_ number of nonzeros         */</comment>
+
+            
+        <decl_stmt><decl><type><name>double</name> *</type><name>val</name> =<init> <expr><call><name>RandomVector</name><argument_list>(<argument><expr><name>anz</name></expr></argument>, <argument><expr><name>R</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name> *</type><name>col</name> =<init> <expr>(<name>int</name>*) <call><name>malloc</name><argument_list>(<argument><expr><call><name>sizeof</name><argument_list>(<argument><expr><name>int</name></expr></argument>)</argument_list></call>*<name>nz</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name> *</type><name>row</name> =<init> <expr>(<name>int</name>*) <call><name>malloc</name><argument_list>(<argument><expr><call><name>sizeof</name><argument_list>(<argument><expr><name>int</name></expr></argument>)</argument_list></call>*(<name>N</name>+1)</expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>r</name>=<init><expr>0</expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>cycles</name>=<init><expr>1</expr></init></decl>;</decl_stmt>
+	<decl_stmt><decl><type><name>int</name></type> <name>print</name> =<init> <expr>1</expr></init></decl>;</decl_stmt>
+	<expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"%s\n"</expr></argument>, <argument><expr>"Starting SparseRow"</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+        <decl_stmt><decl><type><name>Stopwatch</name></type> <name>Q</name> =<init> <expr><call><name>new_Stopwatch</name><argument_list>()</argument_list></call></expr></init></decl>;</decl_stmt>
+
+        <expr_stmt><expr><name><name>row</name><index>[<expr>0</expr>]</index></name> = 0</expr>;</expr_stmt> 
+        <for>for (<init><expr><name>r</name>=0</expr>;</init> <condition><expr><name>r</name>&lt;<name>N</name></expr>;</condition> <incr><expr><name>r</name>++</expr></incr>)
+        <block>{
+            <comment type="block">/* initialize elements for row r */</comment>
+
+            <decl_stmt><decl><type><name>int</name></type> <name>rowr</name> =<init> <expr><name><name>row</name><index>[<expr><name>r</name></expr>]</index></name></expr></init></decl>;</decl_stmt>
+            <decl_stmt><decl><type><name>int</name></type> <name>step</name> =<init> <expr><name>r</name>/ <name>nr</name></expr></init></decl>;</decl_stmt>
+            <decl_stmt><decl><type><name>int</name></type> <name>i</name>=<init><expr>0</expr></init></decl>;</decl_stmt>
+
+            <expr_stmt><expr><name><name>row</name><index>[<expr><name>r</name>+1</expr>]</index></name> = <name>rowr</name> + <name>nr</name></expr>;</expr_stmt>
+            <if>if <condition>(<expr><name>step</name> &lt; 1</expr>)</condition><then> <expr_stmt><expr><name>step</name> = 1</expr>;</expr_stmt></then></if>   <comment type="block">/* take at least unit steps */</comment>
+
+
+            <for>for (<init><expr><name>i</name>=0</expr>;</init> <condition><expr><name>i</name>&lt;<name>nr</name></expr>;</condition> <incr><expr><name>i</name>++</expr></incr>)
+                <expr_stmt><expr><name><name>col</name><index>[<expr><name>rowr</name>+<name>i</name></expr>]</index></name> = <name>i</name>*<name>step</name></expr>;</expr_stmt></for>
+                
+        }</block></for>
+
+
+        <while>while<condition>(<expr>1</expr>)</condition>
+        <block>{
+            <expr_stmt><expr><call><name>Stopwatch_start</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+            <expr_stmt><expr><call><name>SparseCompRow_matmult</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>y</name></expr></argument>, <argument><expr><name>val</name></expr></argument>, <argument><expr><name>row</name></expr></argument>, <argument><expr><name>col</name></expr></argument>, <argument><expr><name>x</name></expr></argument>, <argument><expr><name>cycles</name></expr></argument>, <argument><expr><name>print</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+	    <expr_stmt><expr><name>print</name> = 0</expr>;</expr_stmt>
+            <expr_stmt><expr><call><name>Stopwatch_stop</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+            <if>if <condition>(<expr><call><name>Stopwatch_read</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call> &gt;= <name>min_time</name></expr>)</condition><then> <break>break;</break></then></if>
+
+            <expr_stmt><expr><name>cycles</name> *= 2</expr>;</expr_stmt>
+        }</block></while>
+        <comment type="block">/* approx Mflops */</comment>
+        <expr_stmt><expr><name>result</name> = <call><name>SparseCompRow_num_flops</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>nz</name></expr></argument>, <argument><expr><name>cycles</name></expr></argument>)</argument_list></call> / 
+                        <call><name>Stopwatch_read</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call> * 1.0e-6</expr>;</expr_stmt>
+
+        <expr_stmt><expr><call><name>Stopwatch_delete</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name>row</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name>col</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name>val</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name>y</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name>x</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+        <return>return <expr><name>result</name></expr>;</return>
+    }</block></function>
+
+
+    <function><type><name>double</name></type> <name>kernel_measureLU</name><parameter_list>(<param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>double</name></type> <name>min_time</name></decl></param>, <param><decl><type><name>Random</name></type> <name>R</name></decl></param>)</parameter_list>
+    <block>{
+
+        <decl_stmt><decl><type><name>double</name> **</type><name>A</name> =<init> <expr><name>NULL</name></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>double</name> **</type><name>lu</name> =<init> <expr><name>NULL</name></expr></init></decl>;</decl_stmt> 
+        <decl_stmt><decl><type><name>int</name> *</type><name>pivot</name> =<init> <expr><name>NULL</name></expr></init></decl>;</decl_stmt>
+
+    
+
+        <decl_stmt><decl><type><name>Stopwatch</name></type> <name>Q</name> =<init> <expr><call><name>new_Stopwatch</name><argument_list>()</argument_list></call></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>double</name></type> <name>result</name> =<init> <expr>0.0</expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>i</name>=<init><expr>0</expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>cycles</name>=<init><expr>1</expr></init></decl>;</decl_stmt>
+	<decl_stmt><decl><type><name>int</name></type> <name>print</name> =<init> <expr>1</expr></init></decl>;</decl_stmt>
+	<expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"%s\n"</expr></argument>, <argument><expr>"Starting LU"</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+        <if>if <condition>(<expr>(<name>A</name> = <call><name>RandomMatrix</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>N</name></expr></argument>,  <argument><expr><name>R</name></expr></argument>)</argument_list></call>) == <name>NULL</name></expr>)</condition><then> <expr_stmt><expr><call><name>exit</name><argument_list>(<argument><expr>1</expr></argument>)</argument_list></call></expr>;</expr_stmt></then></if>
+        <if>if <condition>(<expr>(<name>lu</name> = <call><name>new_Array2D_double</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>N</name></expr></argument>)</argument_list></call>) == <name>NULL</name></expr>)</condition><then> <expr_stmt><expr><call><name>exit</name><argument_list>(<argument><expr>1</expr></argument>)</argument_list></call></expr>;</expr_stmt></then></if>
+        <if>if <condition>(<expr>(<name>pivot</name> = (<name>int</name> *) <call><name>malloc</name><argument_list>(<argument><expr><name>N</name> * <call><name>sizeof</name><argument_list>(<argument><expr><name>int</name></expr></argument>)</argument_list></call></expr></argument>)</argument_list></call>) == <name>NULL</name></expr>)</condition><then> <expr_stmt><expr><call><name>exit</name><argument_list>(<argument><expr>1</expr></argument>)</argument_list></call></expr>;</expr_stmt></then></if>
+
+
+        <while>while<condition>(<expr>1</expr>)</condition>
+        <block>{
+            <expr_stmt><expr><call><name>Stopwatch_start</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+            <for>for (<init><expr><name>i</name>=0</expr>;</init> <condition><expr><name>i</name>&lt;<name>cycles</name></expr>;</condition> <incr><expr><name>i</name>++</expr></incr>)
+            <block>{
+                <expr_stmt><expr><call><name>Array2D_double_copy</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>N</name></expr></argument>, <argument><expr><name>lu</name></expr></argument>, <argument><expr><name>A</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+                <expr_stmt><expr><call><name>LU_factor</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>N</name></expr></argument>, <argument><expr><name>lu</name></expr></argument>, <argument><expr><name>pivot</name></expr></argument>, <argument><expr><name>print</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+            }</block></for>
+	    <expr_stmt><expr><name>print</name> = 0</expr>;</expr_stmt>
+            <expr_stmt><expr><call><name>Stopwatch_stop</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+            <if>if <condition>(<expr><call><name>Stopwatch_read</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call> &gt;= <name>min_time</name></expr>)</condition><then> <break>break;</break></then></if>
+
+            <expr_stmt><expr><name>cycles</name> *= 2</expr>;</expr_stmt>
+        }</block></while>
+        <comment type="block">/* approx Mflops */</comment>
+        <expr_stmt><expr><name>result</name> = <call><name>LU_num_flops</name><argument_list>(<argument><expr><name>N</name></expr></argument>)</argument_list></call> * <name>cycles</name> / <call><name>Stopwatch_read</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call> * 1.0e-6</expr>;</expr_stmt>
+
+        <expr_stmt><expr><call><name>Stopwatch_delete</name><argument_list>(<argument><expr><name>Q</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name>pivot</name></expr></argument>)</argument_list></call></expr>;</expr_stmt> 
+        <expr_stmt><expr><call><name>Array2D_double_delete</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>N</name></expr></argument>, <argument><expr><name>lu</name></expr></argument>)</argument_list></call></expr>;</expr_stmt> 
+        <expr_stmt><expr><call><name>Array2D_double_delete</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>N</name></expr></argument>, <argument><expr><name>A</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+        <return>return <expr><name>result</name></expr>;</return>
+
+    }</block></function>
+
+</unit>
