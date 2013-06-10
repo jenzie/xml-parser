@@ -54,7 +54,6 @@ public class NaiveStrategy implements ApproximationStrategy {
 						tempPiece[j] = replace;
 						this.count++;
 					}
-					System.out.println(tempPiece[j]);
 					tempResult += tempPiece[j];
 				}
 			}
