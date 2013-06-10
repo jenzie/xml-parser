@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class RandomStrategy implements ApproximationStrategy {
+	private ArrayList<ArrayList<String>> parsedFile;
 	private int count;
 	private int totalCount;
 
@@ -39,16 +40,42 @@ public class RandomStrategy implements ApproximationStrategy {
 			ArrayList<String> file, String find, String replace) {
 
 		ArrayList<String> result = new ArrayList<String>();
-		Map indices = this.countTotal(file, find);
+		ArrayList<String> indices = this.countTotal(file, find);
+		int ncount = this.totalCount/2; // number of variables to replace
 		Random generator = new Random();
+		String[] tempIndices;
+		int index, line, piece;
+		String tempLine;
+		this.count = 0; // reset the count
+
+		for(int i = 0; i < ncount; i++) {
+			// generate positive indices only
+			index = generator.nextInt(Integer.MAX_VALUE) + 1;
+			index = index % indices.size();
+
+			tempIndices = indices.get(index).split(",");
+			line = Integer.parseInt(tempIndices[0]);
+			piece = Integer.parseInt(tempIndices[1]);
+			this.parsedFile.get(line).set(piece, replace);
+			this.count++;
+			indices.remove(index);
+		}
+		for(ArrayList<String> l : parsedFile) {
+			tempLine = "";
+			for(String p : l)
+				tempLine += p;
+			result.add(tempLine);
+		}
 
 		return result;
 	}
 
-	public Map countTotal(ArrayList<String> file, String find) {
-		Map indices = new HashMap();
+	public ArrayList<String> countTotal(ArrayList<String> file, String find) {
+		this.parsedFile = new ArrayList<ArrayList<String>>();
+		ArrayList<String> indices = new ArrayList<String>();
 		String[] tempPiece, tempLine;
 		String tempResult;
+		int index;
 
 		// reset count
 		this.totalCount = 0;
@@ -57,6 +84,8 @@ public class RandomStrategy implements ApproximationStrategy {
 		for(int n = 0; n < file.size(); n++) {
 			tempLine = file.get(n).split("<");
 			tempResult = tempLine[0];
+			ArrayList<String> entry = new ArrayList<String>();
+			index = 0; // index of piece in the parsed file
 
 			for(int i = 1; i < tempLine.length; i++) {
 				tempLine[i] = "<" + tempLine[i];
@@ -67,14 +96,16 @@ public class RandomStrategy implements ApproximationStrategy {
 					if(tempPiece[j].contains("<"))
 						tempPiece[j] = tempPiece[j] + ">";
 
+					index++;
+					entry.add(tempPiece[j]);
 					if(tempPiece[j].equals(find)) {
 						this.totalCount++;
-						indices.put(n, j);
+						indices.add(n + "," + index);
 					}
 				}
 			}
+			this.parsedFile.add(entry);
 		}
-		System.out.println("total: " + totalCount);
 		return indices;
 	}
 }

@@ -59,7 +59,6 @@ public class XMLParser {
 
 		while(input.hasNextLine())
 			file.add(input.nextLine());
-		System.out.println("asdf" + file.size());
 
 		// get results, pausing between file writes
 		results = performApproximation(file, "double", "float");
