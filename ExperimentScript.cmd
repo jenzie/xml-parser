@@ -1,23 +1,39 @@
 @echo
 
+:: Run the program and output the results to a file
+java XMLParser.java array.cpp.xml
+java XMLParser.java FFT.cpp.xml
+java XMLParser.java kernel.cpp.xml
+java XMLParser.java LU.cpp.xml
+java XMLParser.java MonteCarlo.cpp.xml
+java XMLParser.java Random.cpp.xml
+java XMLParser.java scimark2.cpp.xml
+java XMLParser.java SOR.cpp.xml
+java XMLParser.java SparseCompRow.cpp.xml
+
 :: Convert the XML files back to source
-..\srcml2src.exe input\array.cpp.xml -o input_src\array.cpp
-..\srcml2src.exe input\FFT.cpp.xml -o input_src\FFT.cpp
-..\srcml2src.exe input\kernel.cpp.xml -o input_src\kernel.cpp
-..\srcml2src.exe input\LU.cpp.xml -o input_src\LU.cpp
-..\srcml2src.exe input\MonteCarlo.cpp.xml -o input_src\MonteCarlo.cpp
-..\srcml2src.exe input\Random.cpp.xml -o input_src\Random.cpp
-..\srcml2src.exe input\scimark2.cpp.xml -o input_src\scimark2.cpp
-..\srcml2src.exe input\SOR.cpp.xml -o input_src\SOR.cpp
-..\srcml2src.exe input\SparseCompRow.cpp.xml -o input_src\SparseCompRow.cpp
+..\srcml2src.exe output\array.cpp.xml -o output_src\array.cpp
+..\srcml2src.exe output\FFT.cpp.xml -o output_src\FFT.cpp
+..\srcml2src.exe output\kernel.cpp.xml -o output_src\kernel.cpp
+..\srcml2src.exe output\LU.cpp.xml -o output_src\LU.cpp
+..\srcml2src.exe output\MonteCarlo.cpp.xml -o output_src\MonteCarlo.cpp
+..\srcml2src.exe output\Random.cpp.xml -o output_src\Random.cpp
+..\srcml2src.exe output\scimark2.cpp.xml -o output_src\scimark2.cpp
+..\srcml2src.exe output\SOR.cpp.xml -o output_src\SOR.cpp
+..\srcml2src.exe output\SparseCompRow.cpp.xml -o output_src\SparseCompRow.cpp
 
 :: Compile the modified source code files
-
-
-:: Run the program and output the results to a file
+g++ *.cpp -o scimark
 
 :: Compare the results to results from the original program
-
-:: Append an entry for this run to the experiment report
+diff input\array.cpp.xml output\array.cpp.xml
+diff input\FFT.cpp.xml output\FFT.cpp.xml
+diff input\kernel.cpp.xml output\kernel.cpp.xml
+diff input\LU.cpp.xml output\LU.cpp.xml
+diff input\MonteCarlo.cpp.xml output\MonteCarlo.cpp.xml
+diff input\Random.cpp.xml output\Random.cpp.xml
+diff input\scimark2.cpp.xml output\scimark2.cpp.xml
+diff input\SOR.cpp.xml output\SOR.cpp.xml
+diff input\SparseCompRow.cpp.xml output\SparseCompRow.cpp.xml
 
 pause

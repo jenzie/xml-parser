@@ -44,7 +44,7 @@ public class RandomStrategy implements ApproximationStrategy {
 
 		// number of variables to replace
 		int ncount = this.totalCount/2;
-		
+
 		Random generator = new Random();
 		String[] tempIndices;
 		int index, line, piece;
