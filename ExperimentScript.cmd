@@ -1,15 +1,20 @@
 @echo
 
+:: Compile the program
+set path=C:\Program Files\Java\jdk1.7.0_07\bin
+javac src\*.java
+javac src\strategy\*.java
+
 :: Run the program and output the results to a file
-java XMLParser.java array.cpp.xml
-java XMLParser.java FFT.cpp.xml
-java XMLParser.java kernel.cpp.xml
-java XMLParser.java LU.cpp.xml
-java XMLParser.java MonteCarlo.cpp.xml
-java XMLParser.java Random.cpp.xml
-java XMLParser.java scimark2.cpp.xml
-java XMLParser.java SOR.cpp.xml
-java XMLParser.java SparseCompRow.cpp.xml
+java src\XMLParser.java array.cpp.xml
+java src\XMLParser.java FFT.cpp.xml
+java src\XMLParser.java kernel.cpp.xml
+java src\XMLParser.java LU.cpp.xml
+java src\XMLParser.java MonteCarlo.cpp.xml
+java src\XMLParser.java Random.cpp.xml
+java src\XMLParser.java scimark2.cpp.xml
+java src\XMLParser.java SOR.cpp.xml
+java src\XMLParser.java SparseCompRow.cpp.xml
 
 :: Convert the XML files back to source
 ..\srcml2src.exe output\array.cpp.xml -o output_src\array.cpp
