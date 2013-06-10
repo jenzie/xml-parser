@@ -83,9 +83,11 @@ public class RandomStrategy implements ApproximationStrategy {
 		// n = line
 		for(int n = 0; n < file.size(); n++) {
 			tempLine = file.get(n).split("<");
-			tempResult = tempLine[0];
 			ArrayList<String> entry = new ArrayList<String>();
 			index = 0; // index of piece in the parsed file
+
+			if(tempLine[0] != null)
+				entry.add(tempLine[0]);
 
 			for(int i = 1; i < tempLine.length; i++) {
 				tempLine[i] = "<" + tempLine[i];
