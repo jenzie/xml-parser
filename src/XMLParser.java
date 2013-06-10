@@ -84,17 +84,31 @@ public class XMLParser {
 		ApproximationStrategy random = new RandomStrategy();
 		ApproximationStrategy loop = new LoopStrategy();
 
+		System.out.println("Performing approximation for " + XMLFile + ".\n");
+
 		results[0] = naive.approximate(file, find, replace);
-		System.out.println("There were " + naive.getCount() + " variables " +
-				"changed from " + find + " to " + replace + ".");
+		if(naive.getCount() == 1)
+			System.out.println("There was " + naive.getCount() + " variable " +
+					"changed from " + find + " to " + replace + ".");
+		else
+			System.out.println("There were " + naive.getCount() + " variables " +
+					"changed from " + find + " to " + replace + ".");
 
 		results[1] = random.approximate(file, find, replace);
-		System.out.println("There were " + random.getCount() + " variables " +
-				"changed from " + find + " to " + replace + ".");
+		if(random.getCount() == 1)
+			System.out.println("There was " + random.getCount() + " variable " +
+					"changed from " + find + " to " + replace + ".");
+		else
+			System.out.println("There were " + random.getCount() + " variables " +
+					"changed from " + find + " to " + replace + ".");
 
 		results[2] = loop.approximate(file, find, replace);
-		System.out.println("There were " + loop.getCount() + " variables " +
-				"changed from " + find + " to " + replace + ".");
+		if(loop.getCount() == 1)
+			System.out.println("There was " + loop.getCount() + " variable " +
+					"changed from " + find + " to " + replace + ".");
+		else
+			System.out.println("There were " + loop.getCount() + " variables " +
+					"changed from " + find + " to " + replace + ".");
 
 		return results;
 	}
