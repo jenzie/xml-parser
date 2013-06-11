@@ -124,12 +124,16 @@ public class XMLParser {
 		SimpleDateFormat dateFormat =
 			new SimpleDateFormat("MMddHHmmss");
 		filename += "_" + dateFormat.format(new Date()) + FILE_EXTENSION;
+		String[] file = filename.split("input");
+		filename = file[0] + "output" + file[1];
 
 		try {
-			out = new PrintWriter(new FileWriter(new File(filename)));
+			File outFile = new File(filename);
+			//outFile.mkdirs();
+			out = new PrintWriter(new FileWriter(outFile));
 		} catch (IOException ioe) {
 			System.err.println("IOException: " +
-					"Could not create print writer for /results/" + outputXML);
+					"Could not create print writer for /output/" + filename);
 		}
 		out.flush();
 		for(int i = 0; i < result.size(); i++)

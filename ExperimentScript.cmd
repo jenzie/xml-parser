@@ -1,17 +1,14 @@
-@echo
+
 
 :: Run the program and output the results to a file
-java -jar xml-parser.jar array.cpp.xml
-java src\XMLParser.java FFT.cpp.xml
-java src\XMLParser.java kernel.cpp.xml
-java src\XMLParser.java LU.cpp.xml
-java src\XMLParser.java MonteCarlo.cpp.xml
-java src\XMLParser.java Random.cpp.xml
-java src\XMLParser.java scimark2.cpp.xml
-java src\XMLParser.java SOR.cpp.xml
-java src\XMLParser.java SparseCompRow.cpp.xml
+for /r input %%F in (*.xml) do java -jar "xml-parser.jar" "%%F" "%%F"
 
 :: Convert the XML files back to source
+for /r output %%F in (*.xml) do (
+	srcml/srcml2src.exe "%%F"
+)
+
+goto comment
 ..\srcml2src.exe output\array.cpp.xml -o output_src\array.cpp
 ..\srcml2src.exe output\FFT.cpp.xml -o output_src\FFT.cpp
 ..\srcml2src.exe output\kernel.cpp.xml -o output_src\kernel.cpp
@@ -35,5 +32,6 @@ diff input\Random.cpp.xml output\Random.cpp.xml
 diff input\scimark2.cpp.xml output\scimark2.cpp.xml
 diff input\SOR.cpp.xml output\SOR.cpp.xml
 diff input\SparseCompRow.cpp.xml output\SparseCompRow.cpp.xml
+:comment
 
 pause
