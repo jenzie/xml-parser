@@ -5,7 +5,10 @@ for /r input %%F in (*.xml) do java -jar "xml-parser.jar" "%%F" "%%F"
 
 :: Convert the XML files back to source
 for /r output %%F in (*.xml) do (
-	"srcml/srcml2src.exe" "%%F" -o "output_src/%%~nxF"
+	for /f "tokens=1-7 delims=_" %a in %%~nxF do (
+		Set filename=%a
+	)
+	"srcml/srcml2src.exe" "%%F" -o "output_src/%filename%"
 )
 
 goto comment
