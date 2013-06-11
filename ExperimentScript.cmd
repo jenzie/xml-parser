@@ -1,11 +1,11 @@
-
+@echo
 
 :: Run the program and output the results to a file
 for /r input %%F in (*.xml) do java -jar "xml-parser.jar" "%%F" "%%F"
 
 :: Convert the XML files back to source
 for /r output %%F in (*.xml) do (
-	srcml/srcml2src.exe "%%F"
+	"srcml/srcml2src.exe" "%%F" -o "output_src/%%~nxF"
 )
 
 goto comment
