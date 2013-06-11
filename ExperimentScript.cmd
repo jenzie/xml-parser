@@ -1,12 +1,7 @@
 @echo
 
-:: Compile the program
-set path=C:\Program Files\Java\jdk1.7.0_07\bin
-javac src\*.java
-javac src\strategy\*.java
-
 :: Run the program and output the results to a file
-java src\XMLParser.java array.cpp.xml
+java -jar xml-parser.jar array.cpp.xml
 java src\XMLParser.java FFT.cpp.xml
 java src\XMLParser.java kernel.cpp.xml
 java src\XMLParser.java LU.cpp.xml

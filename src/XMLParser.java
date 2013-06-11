@@ -18,39 +18,43 @@ import java.util.Scanner;
 
 public class XMLParser {
 	private static final String FILE_EXTENSION = ".xml";
-	private String XMLFile;
+	private String inputXML, outputXML;
 	private Scanner input;
 	private PrintWriter out;
 
-	public XMLParser(String XMLFile) throws InterruptedException {
-		this.XMLFile = XMLFile;
+	public XMLParser(String inputXML, String outputXML) throws InterruptedException {
+		this.inputXML = inputXML;
+		this.outputXML = outputXML;
 
 		try {
-			input = new Scanner(new File("input", XMLFile)); // directory, file
+			input = new Scanner(new File(inputXML)); // directory, file
 		} catch (FileNotFoundException e) {
-			System.err.println("Usage: java XMLParser.java FILENAME.xml");
+			System.err.println("Usage: java XMLParser.java INPUT.xml OUTPUT.xml");
 			System.exit(0);
 		}
 		run();
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		String fileExtension;
+		String fileExtension1, fileExtension2;
 		boolean status = false;
 
-		if(args.length != 0) {
-			fileExtension =
+		if(args.length == 2) {
+			fileExtension1 =
 				args[0].substring(args[0].length() - FILE_EXTENSION.length());
-			if(fileExtension.equals(FILE_EXTENSION))
+			fileExtension2 =
+				args[1].substring(args[1].length() - FILE_EXTENSION.length());
+			if(fileExtension1.equals(FILE_EXTENSION) &&
+					fileExtension2.equals(FILE_EXTENSION))
 				status = true;
 		}
 
 		if(!status) {
-			System.err.println("Usage: java XMLParser.java FILENAME.xml");
+			System.err.println("Usage: java XMLParser.java INPUT.xml OUTPUT.xml");
 			System.exit(0);
 		}
 
-		new XMLParser(args[0]);
+		new XMLParser(args[0], args[1]);
 	}
 
 	private void run() throws InterruptedException {
@@ -67,9 +71,9 @@ public class XMLParser {
 		Thread.sleep(1000);
 		getOutFile(results[0]);
 		Thread.sleep(1000);
-		getOutFile(results[1]);
+		//getOutFile(results[1]);
 		Thread.sleep(1000);
-		getOutFile(results[2]);
+		//getOutFile(results[2]);
 
 		System.out.println("Writing complete.");
 	}
@@ -84,7 +88,7 @@ public class XMLParser {
 		ApproximationStrategy random = new RandomStrategy();
 		ApproximationStrategy loop = new LoopStrategy();
 
-		System.out.println("Performing approximation for " + XMLFile + ".\n");
+		System.out.println("\nPerforming approximation for " + inputXML + ".\n");
 
 		results[0] = naive.approximate(file, find, replace);
 		if(naive.getCount() == 1)
@@ -116,16 +120,16 @@ public class XMLParser {
 	private void getOutFile(ArrayList<String> result) {
 		// produce unique file names
 		String filename =
-				XMLFile.substring(0, XMLFile.length() - FILE_EXTENSION.length());
+			outputXML.substring(0, outputXML.length() - FILE_EXTENSION.length());
 		SimpleDateFormat dateFormat =
-				new SimpleDateFormat("MMddHHmmss");
+			new SimpleDateFormat("MMddHHmmss");
 		filename += "_" + dateFormat.format(new Date()) + FILE_EXTENSION;
 
 		try {
-			out = new PrintWriter(new FileWriter(new File("output", filename)));
+			out = new PrintWriter(new FileWriter(new File(filename)));
 		} catch (IOException ioe) {
 			System.err.println("IOException: " +
-					"Could not create print writer for /results/" + XMLFile);
+					"Could not create print writer for /results/" + outputXML);
 		}
 		out.flush();
 		for(int i = 0; i < result.size(); i++)
