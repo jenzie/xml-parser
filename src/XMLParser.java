@@ -129,7 +129,7 @@ public class XMLParser {
 
 		try {
 			File outFile = new File(filename);
-			//outFile.mkdirs();
+			outFile.getParentFile().mkdirs();
 			out = new PrintWriter(new FileWriter(outFile));
 		} catch (IOException ioe) {
 			System.err.println("IOException: " +
