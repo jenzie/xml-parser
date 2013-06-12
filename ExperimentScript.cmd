@@ -6,10 +6,19 @@ for /r input %%F in (*.xml) do java -jar "xml-parser.jar" "%%F" "%%F"
 
 :: Convert the XML files back to source
 for /r output %%F in (*.xml) do (
-	set "filename=%%~nxF" array.cpp_743228372.xml
-	set "cppfilename=%filename%__="^&REM #%
-	echo %cppfilename%
-	
+	set "filename=%%~nxF"
+	set "index=0"
+	set "length=-1"
+	:begin
+	if "!filename:~%index%,1!"=="" goto end
+	if "!filename:~%index%,4!"==".cpp" set length=%index%
+	set /a index+=1
+	goto begin
+	:end
+	set four=4 
+	set /a filenameLength=%length%+%four% 
+	set name=!filename:~0,%filenameLength%!
+	"srcml/srcml2src.exe" "%%F" -o "output_src/%name%"\	
 )
 ::"srcml/srcml2src.exe" "%%F" -o "output_src/%cppfilename%" in for
 ::"srcml/srcml2src.exe" "%%F" -o "output_src/%%~nxF" works without renaming
