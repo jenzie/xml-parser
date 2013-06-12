@@ -1,15 +1,19 @@
-@echo
+@echo off
+setlocal enabledelayedexpansion
 
 :: Run the program and output the results to a file
 for /r input %%F in (*.xml) do java -jar "xml-parser.jar" "%%F" "%%F"
 
 :: Convert the XML files back to source
 for /r output %%F in (*.xml) do (
-	for /f "tokens=1-7 delims=_" %a in %%~nxF do (
-		Set filename=%a
-	)
-	"srcml/srcml2src.exe" "%%F" -o "output_src/%filename%"
+	set "filename=%%~nxF" array.cpp_743228372.xml
+	set "cppfilename=%filename%__="^&REM #%
+	echo %cppfilename%
+	
 )
+::"srcml/srcml2src.exe" "%%F" -o "output_src/%cppfilename%" in for
+::"srcml/srcml2src.exe" "%%F" -o "output_src/%%~nxF" works without renaming
+
 
 goto comment
 ..\srcml2src.exe output\array.cpp.xml -o output_src\array.cpp
