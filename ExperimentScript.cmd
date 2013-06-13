@@ -19,10 +19,9 @@ for /r output %%F in (*.xml) do (
 	set four=4 
 	set /a nameLength=%length%+%four% 
 	set name=!filename:~0,%nameLength%!
+	echo %name%
 	"srcml/srcml2src.exe" "output/%filename%" -o "output_src/%name%"
 )
-::"srcml/srcml2src.exe" "%%F" -o "output_src/%cppfilename%" in for
-::"srcml/srcml2src.exe" "%%F" -o "output_src/%%~nxF" works without renaming
 
 
 goto comment
