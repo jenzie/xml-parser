@@ -123,7 +123,8 @@ public class XMLParser {
 			outputXML.substring(0, outputXML.length() - FILE_EXTENSION.length());
 		SimpleDateFormat dateFormat =
 			new SimpleDateFormat("MMddHHmmss");
-		filename += "_" + dateFormat.format(new Date()) + FILE_EXTENSION;
+		//filename += "_" + dateFormat.format(new Date()) + FILE_EXTENSION;
+		filename += FILE_EXTENSION;
 		String[] file = filename.split("input");
 		filename = file[0] + "output" + file[1];
 
