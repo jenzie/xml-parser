@@ -2,17 +2,17 @@
 
 use strict;
 use warnings;
-use Cwd;
+use Cwd;        # Get current working directory
 
 # Global settings variables
-our $input_proc = "java -jar \"xml-parser.jar\"";		# Run for each input file
-our $output_proc = "\"srcml\\srcml2src.exe\""; 			# Run on each output file
-our $outsrc_proc = "gcc";								# Run on each output_src
+our $input_proc = "java -jar \"xml-parser.jar\"";	# Run for each input file
+our $output_proc = "\"srcml\\srcml2src.exe\""; 		# Run on each output file
+our $outsrc_proc = "gcc";							# Run on each output_src
 my $debug_flag = 0;									# If true, print commands
-														#  instead of executing them.
+													# instead of executing them.
 
-# Step through the input directory. Creating the proper directories in output and
-# output_src if they don't exist. Then run the input command on all the xml files
+# Step through input directory creating the proper directories in output and
+# output_src if they don't exist. Then run the input command on all xml files.
 sub input_handler {
 
 	# Get the root directory, first function arg
@@ -52,7 +52,7 @@ sub input_handler {
 			}
 		} elsif(-d "$path\\$item") {
 		
-			# Build output and output_src equivilents of this path
+			# Build output and output_src equivalents of this path
 			my $out_path = "$root_dir\\output\\$cur_dir\\$item";
 			my $outsrc_path = "$root_dir\\output_src\\$cur_dir\\$item";
 			
@@ -81,7 +81,7 @@ sub input_handler {
 
 
 # Step through the output directory processing all of the files in
-# output into their corrisponding output_src files
+# output into their corresponding output_src files
 sub output_handler {
 
 	# Get the root directory, first function arg
@@ -119,8 +119,9 @@ sub output_handler {
 		
 		# Handle xml files
 		if((-f "$path\\$item") && ($item =~ m/\.xml$/)) {
-		
-			# Build corrisponding output_src path, replace ending .xml with .cpp
+
+		    # Example file name: array.cpp.xml
+			# Build corresponding output_src path, remove ending .xml
 			my $outsrc_path = "$root_dir\\output_src\\$cur_dir\\$item";
 			$outsrc_path =~ s/\.xml$//;
 			
@@ -190,18 +191,18 @@ sub outputsrc_handler {
 	}
 }
 
-# Process the current working directory using the three functions
+# Process the current working directory using the three functions.
 sub process_dir {
 
-	# Handle broken getcwd implement
-	my $fixit = getcwd();
-	$fixit =~ s/\//\\/g;
+	# Get current working directory to use as argument
+	my $cwd = getcwd();
+	$cwd =~ s/\//\\/g;
 
-	input_handler($fixit, ".");
-	output_handler($fixit, ".");
-	outputsrc_handler($fixit, ".");
+	input_handler($cwd, ".");
+	output_handler($cwd, ".");
+	outputsrc_handler($cwd, ".");
 }
 
 
-# Run the main function
+# Run the main function.
 process_dir();
