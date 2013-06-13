@@ -30,7 +30,8 @@ public class Script {
 
 			try {
 				process = Runtime.getRuntime().exec("java -jar xml-parser.jar "
-					+ fileObject.getCanonicalPath() + " " + fileObject.getCanonicalPath());
+					+ fileObject.getCanonicalPath() + " "
+						+ fileObject.getCanonicalPath());
 				System.out.println(fileObject.getCanonicalFile());
 				// Then retrieve the process output
 				InputStream in = process.getInputStream();
