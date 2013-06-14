@@ -7,7 +7,7 @@ use Cwd;        # Get current working directory
 # Global settings variables
 our $input_proc = "java -jar \"xml-parser.jar\"";	# Run for each input file
 our $output_proc = "\"srcml\\srcml2src.exe\""; 		# Run on each output file
-our $outsrc_proc = "gcc";							# Run on each output_src
+our $outsrc_proc = "g++";							# Run on each output_src
 my $debug_flag = 0;									# If true, print commands
 													# instead of executing them.
 
@@ -151,44 +151,61 @@ sub outputsrc_handler {
 	# If debugging print current dir
 	if($debug_flag == 1) { print "Current directory: $path\n"; }
 	
-	# Open the current directory and read into array
-	opendir(DIR, $path) or die "Fatal Error: Couldn't open $path\n";
-	my @items = readdir(DIR);
-	closedir(DIR);
-	
-	# Remove "." from path
-	if($cur_dir eq ".") { $path = "$root_dir\\input" };
-	
-	foreach my $item (@items) {
-		
-		# Skip the . and .. directories
-		next if($item =~ m/\.{1,2}$/);
-		
-		# Recurse for directories
-		if(-d "$path\\$item") {
-		
-			# Recurse down into the subdirectory, don't pass . or ..
-			if($cur_dir ne ".") {
-				outputsrc_handler($root_dir, "$cur_dir\\$item");
-			} else {
-				outputsrc_handler($root_dir, "$item");
-			}
-		}
-		
-		# Handle xml files
-		if((-f "$path\\$item") && ($item =~ m/(.cpp|.h)$/)) {
-			
-			# Build command string
-			my $cmdstr = "$outsrc_proc \"$path\\$item\"";
-		
-			# If debug mode print, else run
-			if($debug_flag == 1) {
-				print "\t$cmdstr\n";
-			} else {
-				system($cmdstr);
-			}
-		}
+	# If debug mode print, else compile
+	my $cmdstr = "$outsrc_proc \"$path\\*.cpp\" -o \"$path\\scimark_v1.exe\"";
+	if($debug_flag == 1) {
+		print "\t$cmdstr\n";
+	} else {
+		system($cmdstr);
 	}
+	
+	# if debug mode print, else redirect results
+	my $cmdstr = "\"$path\\scimark_v1.exe\" > \"$path\\scimark_v1.txt\"";
+	if($debug_flag == 1) {
+		print "\t$cmdstr\n";
+	} else {
+		system($cmdstr);
+	}
+	
+	# # Open the current directory and read into array
+	# opendir(DIR, $path) or die "Fatal Error: Couldn't open $path\n";
+	# my @items = readdir(DIR);
+	# closedir(DIR);
+	
+	# # Remove "." from path
+	# if($cur_dir eq ".") { $path = "$root_dir\\input" };
+	
+	# foreach my $item (@items) {
+		
+		# # Skip the . and .. directories
+		# next if($item =~ m/\.{1,2}$/);
+		
+		# # Recurse for directories
+		# if(-d "$path\\$item") {
+		
+			# # Recurse down into the subdirectory, don't pass . or ..
+			# if($cur_dir ne ".") {
+				# outputsrc_handler($root_dir, "$cur_dir\\$item");
+			# } else {
+				# outputsrc_handler($root_dir, "$item");
+			# }
+		# }
+		
+		# # Handle cpp files
+		# if((-f "$path\\$item") && ($item =~ m/(.cpp|.h)$/)) {
+			
+			# # Build command string
+			# my $cmdstr = "$outsrc_proc \"$path\\$item\"";
+		
+			# # If debug mode print, else run
+			# if($debug_flag == 1) {
+				# print "\t$cmdstr\n";
+			# } else {
+				# system($cmdstr);
+			# }
+		# }
+	# }
+	
 }
 
 # Process the current working directory using the three functions.
