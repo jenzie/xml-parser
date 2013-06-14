@@ -166,46 +166,6 @@ sub outputsrc_handler {
 	} else {
 		system($cmdstr);
 	}
-	
-	# # Open the current directory and read into array
-	# opendir(DIR, $path) or die "Fatal Error: Couldn't open $path\n";
-	# my @items = readdir(DIR);
-	# closedir(DIR);
-	
-	# # Remove "." from path
-	# if($cur_dir eq ".") { $path = "$root_dir\\input" };
-	
-	# foreach my $item (@items) {
-		
-		# # Skip the . and .. directories
-		# next if($item =~ m/\.{1,2}$/);
-		
-		# # Recurse for directories
-		# if(-d "$path\\$item") {
-		
-			# # Recurse down into the subdirectory, don't pass . or ..
-			# if($cur_dir ne ".") {
-				# outputsrc_handler($root_dir, "$cur_dir\\$item");
-			# } else {
-				# outputsrc_handler($root_dir, "$item");
-			# }
-		# }
-		
-		# # Handle cpp files
-		# if((-f "$path\\$item") && ($item =~ m/(.cpp|.h)$/)) {
-			
-			# # Build command string
-			# my $cmdstr = "$outsrc_proc \"$path\\$item\"";
-		
-			# # If debug mode print, else run
-			# if($debug_flag == 1) {
-				# print "\t$cmdstr\n";
-			# } else {
-				# system($cmdstr);
-			# }
-		# }
-	# }
-	
 }
 
 # Process the current working directory using the three functions.
