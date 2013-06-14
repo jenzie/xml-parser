@@ -5,12 +5,71 @@ use warnings;
 use Cwd;        # Get current working directory
 
 # Global settings variables
+our $insrc_proc = "\"srcml\\src2srcml.exe\""; 		# Run for each input_src
 our $input_proc = "java -jar \"xml-parser.jar\"";	# Run for each input file
 our $output_proc = "\"srcml\\srcml2src.exe\""; 		# Run on each output file
 our $outsrc_proc = "g++";							# Run on each output_src
 my $debug_flag = 0;									# If true, print commands
 													# instead of executing them.
 
+# Step through input_src directory to convert source files to source xml 
+# files in the input directory.
+sub inputsrc_handler {
+
+	# Get the root directory, first function arg
+    # and the current directory, second function
+    my $root_dir = $_[0];
+    my $cur_dir = $_[1];
+    my $path = "$root_dir\\input_src\\$cur_dir";
+
+    # If debugging print current dir
+    if($debug_flag == 1) { print "Current directory: $path\n"; }
+
+    # Open the current directory and read into array
+    opendir(DIR, $path) or die "Fatal Error: Couldn't open $path\n";
+    my @items = readdir(DIR);
+    closedir(DIR);
+
+    # Remove "." from path
+    if($cur_dir eq ".") { $path = "$root_dir\\input_src" };
+
+    foreach my $item (@items) {
+
+        # Skip the . and .. directories
+        next if($item =~ m/\.{1,2}$/);
+
+        # Recurse for directories
+        if(-d "$path\\$item") {
+
+            # Recurse down into the subdirectory, don't pass . or ..
+            if($cur_dir ne ".") {
+                inputsrc_handler($root_dir, "$cur_dir\\$item");
+            } else {
+                inputsrc_handler($root_dir, "$item");
+            }
+        }
+
+        # Handle xml files
+        if((-f "$path\\$item") && ($item =~ m/\(.cpp,.h)$/)) {
+
+            # Example file name: array.cpp => array.cpp.xml
+            # Build corresponding input path, add ending .xml
+            my $insrc_path = "$root_dir\\input\\$cur_dir\\$item";
+            #$insrc_path =~ s/\.xml$//;
+
+            # Build command string
+            my $cmdstr = "$input_proc \"$path\\$item\" > \"$insrc_path\"";
+
+            # If debug mode print, else run
+            if($debug_flag == 1) {
+                print "\t$cmdstr\n";
+            } else {
+                system($cmdstr);
+            }
+        }
+    }
+}									
+													
 # Step through input directory creating the proper directories in output and
 # output_src if they don't exist. Then run the input command on all xml files.
 sub input_handler {
