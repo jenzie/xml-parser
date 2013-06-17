@@ -21,6 +21,7 @@ public class XMLParser {
 	private String inputXML, outputXML;
 	private Scanner input;
 	private PrintWriter out;
+	private static final Boolean DEBUG = false; // print debug messages if true
 
 	public XMLParser(String inputXML, String outputXML) throws InterruptedException {
 		this.inputXML = inputXML;
@@ -66,16 +67,18 @@ public class XMLParser {
 
 		// get results, pausing between file writes
 		results = performApproximation(file, "double", "float");
-		System.out.println("\nWriting results to output directory.");
+		if(DEBUG)
+			System.out.println("\nWriting results to output directory.");
 
-		Thread.sleep(1000);
+		//Thread.sleep(1000);
 		getOutFile(results[0]);
 		//Thread.sleep(1000);
 		//getOutFile(results[1]);
 		//Thread.sleep(1000);
 		//getOutFile(results[2]);
 
-		System.out.println("Writing complete.");
+		if(DEBUG)
+			System.out.println("Writing complete.");
 	}
 
 	private ArrayList<String>[] performApproximation(
@@ -88,31 +91,42 @@ public class XMLParser {
 		ApproximationStrategy random = new RandomStrategy();
 		ApproximationStrategy loop = new LoopStrategy();
 
-		System.out.println("\nPerforming approximation for " + inputXML + ".\n");
+		if(DEBUG)
+			System.out.println(
+					"\nPerforming approximation for " + inputXML + ".\n");
 
 		results[0] = naive.approximate(file, find, replace);
-		if(naive.getCount() == 1)
-			System.out.println("There was " + naive.getCount() + " variable " +
-					"changed from " + find + " to " + replace + ".");
-		else
-			System.out.println("There were " + naive.getCount() + " variables " +
-					"changed from " + find + " to " + replace + ".");
-
 		results[1] = random.approximate(file, find, replace);
-		if(random.getCount() == 1)
-			System.out.println("There was " + random.getCount() + " variable " +
-					"changed from " + find + " to " + replace + ".");
-		else
-			System.out.println("There were " + random.getCount() + " variables " +
-					"changed from " + find + " to " + replace + ".");
-
 		results[2] = loop.approximate(file, find, replace);
-		if(loop.getCount() == 1)
-			System.out.println("There was " + loop.getCount() + " variable " +
-					"changed from " + find + " to " + replace + ".");
-		else
-			System.out.println("There were " + loop.getCount() + " variables " +
-					"changed from " + find + " to " + replace + ".");
+
+		if(DEBUG) {
+			if(naive.getCount() == 1)
+				System.out.println("There was " + naive.getCount() +
+					" variable " + "changed from " +
+						find + " to " + replace + ".");
+			else
+				System.out.println("There were " + naive.getCount() +
+					" variables " + "changed from " +
+						find + " to " + replace + ".");
+
+			if(random.getCount() == 1)
+				System.out.println("There was " + random.getCount() +
+					" variable " + "changed from " +
+						find + " to " + replace + ".");
+			else
+				System.out.println("There were " + random.getCount() +
+					" variables " + "changed from " +
+						find + " to " + replace + ".");
+
+			if(loop.getCount() == 1)
+				System.out.println("There was " + loop.getCount() +
+					" variable " + "changed from " +
+						find + " to " + replace + ".");
+			else
+				System.out.println("There were " + loop.getCount() +
+					" variables " + "changed from " +
+						find + " to " + replace + ".");
+		}
 
 		return results;
 	}
@@ -121,8 +135,8 @@ public class XMLParser {
 		// produce unique file names
 		String filename =
 			outputXML.substring(0, outputXML.length() - FILE_EXTENSION.length());
-		SimpleDateFormat dateFormat =
-			new SimpleDateFormat("MMddHHmmss");
+		//SimpleDateFormat dateFormat =
+		//	new SimpleDateFormat("MMddHHmmss");
 		//filename += "_" + dateFormat.format(new Date()) + FILE_EXTENSION;
 		filename += FILE_EXTENSION;
 		//String[] file = filename.split("input");

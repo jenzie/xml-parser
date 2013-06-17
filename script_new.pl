@@ -183,12 +183,10 @@ procdir("java -jar \"xml-parser.jar\" %INPUT_DIR% %OUTPUT_DIR%",
 
 # Convert .xml files to .cpp and .h files
 procdir("\"srcml\\srcml2src.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
-    "output", "output_src", "%FILENAME%.%ORIGEXT%", ".xml");
+    "output", "output_src", "%FILENAME%", ".xml");
 
 # Compile the .cpp files
-procdir("g++ %INPUT_DIR% -o %OUTPUT_DIR%",
-    "output_src", "output_src", "scimark_v1.exe", ".cpp");
+system("g++ \"output_src\\*.cpp\" -o \"output_src\\scimark_v1.exe\"");
 
 # Run the .exe
-procdir("%INPUT_DIR%\"scimark_v1.exe\" > %OUTPUT_DIR%",
-    "output_src", "output_src", "scimark_v1.txt", ".exe");
+system("\"output_src\\scimark_v1.exe\" > \"output_src\\scimark_v1.txt\"");
