@@ -7,9 +7,9 @@ use Cwd;        # Get current working directory
 # Global variable used to store the root directory, this is updated
 # with the setrootdir command.
 our $root_dir = "";
-our $debug_flag = 1;
+our $debug_flag = 0;
 
-# Set the root directory that will be used for the remaning operations
+# Set the root directory that will be used for the remaining operations
 # performed by the script.
 sub setrootdir {
 
@@ -18,7 +18,7 @@ sub setrootdir {
 	return;
 }
 
-# Syncronize the directory trees. This will walk down the directory tree
+# Synchronize the directory trees. This will walk down the directory tree
 # making sure all of the directories are in sync. It will sync as many
 # directories as you give it.
 # Usage syncdirs([master dir], [directories to sync]...)
@@ -128,7 +128,7 @@ sub procdir {
 		}
 		elsif(-f "$indir\\$item") {
 		
-			# Check to see if it is one of the valid filetypes
+			# Check to see if it is one of the valid file types
 			my $flag_valid = 0;
 			for(my $x = 0; $x < @lookfor; $x++) {
 			
@@ -170,8 +170,25 @@ sub procdir {
 
 
 # Set the root and create the directories
-setrootdir("C:\\Users\\justin\\Desktop\\compile-script");
-syncdirs("input", "output", "output_src");
+setrootdir("C:\\Users\\Serenity\\SkyDrive\\Documents\\College\\rit_research\\xml-parser");
+syncdirs("input_src", "input", "output", "output_src");
 
-# Process the input files into outputs
-procdir("java -jar \"xml-parser.jar\" %INPUT_DIR% %OUTPUT_DIR%", "input", "output", "%FILENAME%.%ORIGEXT%.xml", ".xml");
+# Convert .cpp and .h files to .xml files
+procdir("\"srcml\\src2srcml.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
+    "input_src", "input", "%FILENAME%.%ORIGEXT%.xml", ".cpp", ".h");
+
+# Perform approximation on .xml files
+procdir("java -jar \"xml-parser.jar\" %INPUT_DIR% %OUTPUT_DIR%",
+    "input", "output", "%FILENAME%.%ORIGEXT%", ".xml");
+
+# Convert .xml files to .cpp and .h files
+procdir("\"srcml\\srcml2src.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
+    "output", "output_src", "%FILENAME%.%ORIGEXT%", ".xml");
+
+# Compile the .cpp files
+procdir("g++ %INPUT_DIR% -o %OUTPUT_DIR%",
+    "output_src", "output_src", "scimark_v1.exe", ".cpp");
+
+# Run the .exe
+procdir("%INPUT_DIR%\"scimark_v1.exe\" > %OUTPUT_DIR%",
+    "output_src", "output_src", "scimark_v1.txt", ".exe");
