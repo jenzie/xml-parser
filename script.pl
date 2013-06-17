@@ -50,15 +50,17 @@ sub inputsrc_handler {
         }
 
         # Handle xml files
-        if((-f "$path\\$item") && ($item =~ m/\(.cpp,.h)$/)) {
+        if((-f "$path\\$item") && ($item =~ m/(\.cpp|\.h)$/)) {
 
             # Example file name: array.cpp => array.cpp.xml
             # Build corresponding input path, add ending .xml
             my $insrc_path = "$root_dir\\input\\$cur_dir\\$item";
+			if($cur_dir eq ".") { $insrc_path = "$root_dir\\input\\$item"; }
+			$insrc_path = "$insrc_path.xml";
             #$insrc_path =~ s/\.xml$//;
 
             # Build command string
-            my $cmdstr = "$input_proc \"$path\\$item\" > \"$insrc_path\"";
+            my $cmdstr = "$insrc_proc \"$path\\$item\" -o \"$insrc_path\"";
 
             # If debug mode print, else run
             if($debug_flag == 1) {
@@ -219,7 +221,7 @@ sub outputsrc_handler {
 	}
 	
 	# if debug mode print, else redirect results
-	my $cmdstr = "\"$path\\scimark_v1.exe\" > \"$path\\scimark_v1.txt\"";
+	$cmdstr = "\"$path\\scimark_v1.exe\" > \"$path\\scimark_v1.txt\"";
 	if($debug_flag == 1) {
 		print "\t$cmdstr\n";
 	} else {
@@ -234,6 +236,7 @@ sub process_dir {
 	my $cwd = getcwd();
 	$cwd =~ s/\//\\/g;
 
+	inputsrc_handler($cwd, ".");
 	input_handler($cwd, ".");
 	output_handler($cwd, ".");
 	outputsrc_handler($cwd, ".");
