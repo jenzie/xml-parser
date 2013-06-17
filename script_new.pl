@@ -221,3 +221,6 @@ main();
 
 # 3. collect memory usage results for exe in each "foo#"
 # write to output file named "summary" start and end memory usage
+
+# 4. write java code to parse the "summary" file to produce nicer output
+# make it an .exe
