@@ -168,25 +168,56 @@ sub procdir {
 }
 
 
+# Runs the program
+sub main {
 
-# Set the root and create the directories
-setrootdir("C:\\Users\\Serenity\\SkyDrive\\Documents\\College\\rit_research\\xml-parser");
-syncdirs("input_src", "input", "output", "output_src");
+    print "(1/6) Setting the root and syncing all subdirectories.\n";
 
-# Convert .cpp and .h files to .xml files
-procdir("\"srcml\\src2srcml.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
-    "input_src", "input", "%FILENAME%.%ORIGEXT%.xml", ".cpp", ".h");
+    # Set the root and create the directories
+    setrootdir(getcwd());
+    syncdirs("input_src", "input", "output", "output_src");
 
-# Perform approximation on .xml files
-procdir("java -jar \"xml-parser.jar\" %INPUT_DIR% %OUTPUT_DIR%",
-    "input", "output", "%FILENAME%.%ORIGEXT%", ".xml");
+    print "(2/6) Converting source files to .xml files.\n";
 
-# Convert .xml files to .cpp and .h files
-procdir("\"srcml\\srcml2src.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
-    "output", "output_src", "%FILENAME%", ".xml");
+    # Convert .cpp and .h files to .xml files
+    procdir("\"srcml\\src2srcml.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
+        "input_src", "input", "%FILENAME%.%ORIGEXT%.xml", ".cpp", ".h");
 
-# Compile the .cpp files
-system("g++ \"output_src\\*.cpp\" -o \"output_src\\scimark_v1.exe\"");
+    print "(3/6) Performing approximation on .xml files.\n";
 
-# Run the .exe
-system("\"output_src\\scimark_v1.exe\" > \"output_src\\scimark_v1.txt\"");
+    # Perform approximation on .xml files
+    procdir("java -jar \"xml-parser.jar\" %INPUT_DIR% %OUTPUT_DIR%",
+        "input", "output", "%FILENAME%.%ORIGEXT%", ".xml");
+
+    print "(4/6) Converting .xml files to source files.\n";
+
+    # Convert .xml files to .cpp and .h files
+    procdir("\"srcml\\srcml2src.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
+        "output", "output_src", "%FILENAME%", ".xml");
+
+    print "(5/6) Compiling the source files.\n";
+
+    # Compile the .cpp files
+    system("g++ \"output_src\\*.cpp\" -o \"output_src\\scimark_v1.exe\"");
+
+    print "(6/6) Running the executable file.\n";
+
+    # Run the .exe
+    system("\"output_src\\scimark_v1.exe\" > \"output_src\\scimark_v1.txt\"");
+}
+
+main();
+
+# 1. file structure change
+# need to have it go through the directories in "results"
+# each directory in "results" is like "foo1", "foo2", "foo3"
+# each directory in "results" has "input", "input_src", "output", "output_src"
+
+# 2. collect time usage results for exe in each "foo#"
+# set a timer with highest precision of accuracy possible before running exe (6/6)
+# get time after exe has been closed
+# write to output file named "summary" the end time for each directory in "results"
+# just the number, but document the units in the function
+
+# 3. collect memory usage results for exe in each "foo#"
+# write to output file named "summary" start and end memory usage
