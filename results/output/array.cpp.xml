@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" language="C++" filename="C:/Users/Serenity/SkyDrive/Documents/College/rit_research/xml-parser/results\input_src\array.cpp"><cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;stdlib.h&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;stdio.h&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"array.h"</cpp:file></cpp:include>
+
+<cpp:ifndef>#<cpp:directive>ifndef</cpp:directive> <name>NULL</name></cpp:ifndef>
+<cpp:define>#<cpp:directive>define</cpp:directive> <name>NULL</name> 0</cpp:define>
+<cpp:endif>#<cpp:directive>endif</cpp:directive></cpp:endif>
+
+
+<function><type><name>float</name>**</type> <name>new_Array2D_double</name><parameter_list>(<param><decl><type><name>int</name></type> <name>M</name></decl></param>, <param><decl><type><name>int</name></type> <name>N</name></decl></param>)</parameter_list>
+<block>{
+    <decl_stmt><decl><type><name>int</name></type> <name>i</name>=<init><expr>0</expr></init></decl>;</decl_stmt>
+    <decl_stmt><decl><type><name>int</name></type> <name>failed</name> =<init> <expr>0</expr></init></decl>;</decl_stmt>
+
+    <decl_stmt><decl><type><name>float</name> **</type><name>A</name> =<init> <expr>(<name>float</name>**) <call><name>malloc</name><argument_list>(<argument><expr><call><name>sizeof</name><argument_list>(<argument><expr><name>float</name>*</expr></argument>)</argument_list></call>*<name>M</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+    <if>if <condition>(<expr><name>A</name> == <name>NULL</name></expr>)</condition><then>
+        <return>return <expr><name>NULL</name></expr>;</return></then></if>
+
+    <for>for (<init><expr><name>i</name>=0</expr>;</init> <condition><expr><name>i</name>&lt;<name>M</name></expr>;</condition> <incr><expr><name>i</name>++</expr></incr>)
+    <block>{
+        <expr_stmt><expr><name><name>A</name><index>[<expr><name>i</name></expr>]</index></name> = (<name>float</name>*) <call><name>malloc</name><argument_list>(<argument><expr><name>N</name> * <call><name>sizeof</name><argument_list>(<argument><expr><name>float</name></expr></argument>)</argument_list></call></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <if>if <condition>(<expr><name><name>A</name><index>[<expr><name>i</name></expr>]</index></name> == <name>NULL</name></expr>)</condition><then>
+        <block>{
+            <expr_stmt><expr><name>failed</name> = 1</expr>;</expr_stmt>
+            <break>break;</break>
+        }</block></then></if>
+    }</block></for>
+
+    <comment type="block">/* if we didn't successfully allocate all rows of A      */</comment>
+    <comment type="block">/* clean up any allocated memory (i.e. go back and free  */</comment>
+    <comment type="block">/* previous rows) and return NULL                        */</comment>
+
+    <if>if <condition>(<expr><name>failed</name></expr>)</condition><then>
+    <block>{
+        <expr_stmt><expr><name>i</name>--</expr>;</expr_stmt>
+        <for>for (<init>;</init> <condition><expr><name>i</name>&lt;=0</expr>;</condition> <incr><expr><name>i</name>--</expr></incr>)
+            <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name><name>A</name><index>[<expr><name>i</name></expr>]</index></name></expr></argument>)</argument_list></call></expr>;</expr_stmt></for>
+        <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name>A</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <return>return <expr><name>NULL</name></expr>;</return>
+    }</block></then>
+    <else>else
+        <return>return <expr><name>A</name></expr>;</return></else></if>
+}</block></function>
+<function><type><name>void</name></type> <name>Array2D_double_delete</name><parameter_list>(<param><decl><type><name>int</name></type> <name>M</name></decl></param>, <param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>float</name> **</type><name>A</name></decl></param>)</parameter_list>
+<block>{
+    <decl_stmt><decl><type><name>int</name></type> <name>i</name></decl>;</decl_stmt>
+    <if>if <condition>(<expr><name>A</name> == <name>NULL</name></expr>)</condition><then> <return>return;</return></then></if>
+
+    <for>for (<init><expr><name>i</name>=0</expr>;</init> <condition><expr><name>i</name>&lt;<name>M</name></expr>;</condition> <incr><expr><name>i</name>++</expr></incr>)
+        <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name><name>A</name><index>[<expr><name>i</name></expr>]</index></name></expr></argument>)</argument_list></call></expr>;</expr_stmt></for>
+
+    <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name>A</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+}</block></function>
+
+
+  <function><type><name>void</name></type> <name>Array2D_double_copy</name><parameter_list>(<param><decl><type><name>int</name></type> <name>M</name></decl></param>, <param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>float</name> **</type><name>B</name></decl></param>, <param><decl><type><name>float</name> **</type><name>A</name></decl></param>)</parameter_list>
+  <block>{
+
+        <decl_stmt><decl><type><name>int</name></type> <name>remainder</name> =<init> <expr><name>N</name> &amp; 3</expr></init></decl>;</decl_stmt>       <comment type="block">/* N mod 4; */</comment>
+        <decl_stmt><decl><type><name>int</name></type> <name>i</name>=<init><expr>0</expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>j</name>=<init><expr>0</expr></init></decl>;</decl_stmt>
+
+        <for>for (<init><expr><name>i</name>=0</expr>;</init> <condition><expr><name>i</name>&lt;<name>M</name></expr>;</condition> <incr><expr><name>i</name>++</expr></incr>)
+        <block>{
+            <decl_stmt><decl><type><name>float</name> *</type><name>Bi</name> =<init> <expr><name><name>B</name><index>[<expr><name>i</name></expr>]</index></name></expr></init></decl>;</decl_stmt>
+            <decl_stmt><decl><type><name>float</name> *</type><name>Ai</name> =<init> <expr><name><name>A</name><index>[<expr><name>i</name></expr>]</index></name></expr></init></decl>;</decl_stmt>
+            <for>for (<init><expr><name>j</name>=0</expr>;</init> <condition><expr><name>j</name>&lt;<name>remainder</name></expr>;</condition> <incr><expr><name>j</name>++</expr></incr>)
+                <expr_stmt><expr><name><name>Bi</name><index>[<expr><name>j</name></expr>]</index></name> = <name><name>Ai</name><index>[<expr><name>j</name></expr>]</index></name></expr>;</expr_stmt></for>
+            <for>for (<init><expr><name>j</name>=<name>remainder</name></expr>;</init> <condition><expr><name>j</name>&lt;<name>N</name></expr>;</condition> <incr><expr><name>j</name>+=4</expr></incr>)
+            <block>{
+                <expr_stmt><expr><name><name>Bi</name><index>[<expr><name>j</name></expr>]</index></name> = <name><name>Ai</name><index>[<expr><name>j</name></expr>]</index></name></expr>;</expr_stmt>
+                <expr_stmt><expr><name><name>Bi</name><index>[<expr><name>j</name>+1</expr>]</index></name> = <name><name>Ai</name><index>[<expr><name>j</name>+1</expr>]</index></name></expr>;</expr_stmt>
+                <expr_stmt><expr><name><name>Bi</name><index>[<expr><name>j</name>+2</expr>]</index></name> = <name><name>Ai</name><index>[<expr><name>j</name>+2</expr>]</index></name></expr>;</expr_stmt>
+                <expr_stmt><expr><name><name>Bi</name><index>[<expr><name>j</name>+3</expr>]</index></name> = <name><name>Ai</name><index>[<expr><name>j</name>+3</expr>]</index></name></expr>;</expr_stmt>
+            }</block></for>
+        }</block></for>
+  }</block></function>
+</unit>

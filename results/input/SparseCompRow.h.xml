@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" language="C" filename="C:/Users/Serenity/SkyDrive/Documents/College/rit_research/xml-parser/results\input_src\SparseCompRow.h">
+<cpp:ifndef>#<cpp:directive>ifndef</cpp:directive> <name>SPARSE_COMPROW_H</name></cpp:ifndef>
+<cpp:define>#<cpp:directive>define</cpp:directive> <name>SPARSE_COMPROW_H</name></cpp:define>
+
+<function_decl><type><name>double</name></type> <name>SparseCompRow_num_flops</name><parameter_list>(<param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>int</name></type> <name>nz</name></decl></param>, <param><decl><type><name>int</name></type> <name>num_iterations</name></decl></param>)</parameter_list>;</function_decl>
+
+<function_decl><type><name>void</name></type> <name>SparseCompRow_matmult</name><parameter_list>( <param><decl><type><name>int</name></type> <name>M</name></decl></param>, <param><decl><type><name>double</name> *</type><name>y</name></decl></param>, <param><decl><type><name>double</name> *</type><name>val</name></decl></param>, <param><decl><type><name>int</name> *</type><name>row</name></decl></param>,
+			    <param><decl><type><name>int</name> *</type><name>col</name></decl></param>, <param><decl><type><name>double</name> *</type><name>x</name></decl></param>, <param><decl><type><name>int</name></type> <name>NUM_ITERATIONS</name></decl></param>, <param><decl><type><name>int</name></type> <name>print</name></decl></param>)</parameter_list>;</function_decl>
+
+<cpp:endif>#<cpp:directive>endif</cpp:directive></cpp:endif>
+</unit>

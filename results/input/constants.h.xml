@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" language="C" filename="C:/Users/Serenity/SkyDrive/Documents/College/rit_research/xml-parser/results\input_src\constants.h"><cpp:ifndef>#<cpp:directive>ifndef</cpp:directive> <name>CONSTANTS_H_</name></cpp:ifndef>
+<cpp:define>#<cpp:directive>define</cpp:directive> <name>CONSTANTS_H_</name></cpp:define>
+
+     <decl_stmt><decl><type><name>const</name>  <name>double</name></type> <name>RESOLUTION_DEFAULT</name> =<init> <expr>2.0</expr></init></decl>;</decl_stmt>  <comment type="block">/* secs (normally 2.0) */</comment>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>RANDOM_SEED</name> =<init> <expr>101010</expr></init></decl>;</decl_stmt>
+
+    <comment type="block">/* default: small (cache-contained) problem sizes */</comment>
+
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>FFT_SIZE</name> =<init> <expr>1024</expr></init></decl>;</decl_stmt>  <comment type="block">/* must be a power of two */</comment>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>SOR_SIZE</name> =<init><expr>100</expr></init></decl>;</decl_stmt> <comment type="block">/* NxN grid */</comment>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>SPARSE_SIZE_M</name> =<init> <expr>1000</expr></init></decl>;</decl_stmt>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>SPARSE_SIZE_nz</name> =<init> <expr>5000</expr></init></decl>;</decl_stmt>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>LU_SIZE</name> =<init> <expr>100</expr></init></decl>;</decl_stmt>
+
+    <comment type="block">/* large (out-of-cache) problem sizes */</comment>
+
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>LG_FFT_SIZE</name> =<init> <expr>1048576</expr></init></decl>;</decl_stmt>  <comment type="block">/* must be a power of two */</comment>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>LG_SOR_SIZE</name> =<init><expr>1000</expr></init></decl>;</decl_stmt>  <comment type="block">/*  NxN grid  */</comment>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>LG_SPARSE_SIZE_M</name> =<init> <expr>100000</expr></init></decl>;</decl_stmt>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>LG_SPARSE_SIZE_nz</name> =<init><expr>1000000</expr></init></decl>;</decl_stmt>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>LG_LU_SIZE</name> =<init> <expr>1000</expr></init></decl>;</decl_stmt>
+
+    <comment type="block">/* tiny problem sizes (used to mainly to preload network classes     */</comment>
+    <comment type="block">/*                     for applet, so that network download times    */</comment>
+    <comment type="block">/*                     are factored out of benchmark.)               */</comment>
+    <comment type="block">/*                                                                   */</comment>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>TINY_FFT_SIZE</name> =<init> <expr>16</expr></init></decl>;</decl_stmt>  <comment type="block">/* must be a power of two */</comment>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>TINY_SOR_SIZE</name> =<init><expr>10</expr></init></decl>;</decl_stmt> <comment type="block">/* NxN grid */</comment>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>TINY_SPARSE_SIZE_M</name> =<init> <expr>10</expr></init></decl>;</decl_stmt>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>TINY_SPARSE_SIZE_N</name> =<init> <expr>10</expr></init></decl>;</decl_stmt>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>TINY_SPARSE_SIZE_nz</name> =<init> <expr>50</expr></init></decl>;</decl_stmt>
+     <decl_stmt><decl><type><name>const</name>  <name>int</name></type> <name>TINY_LU_SIZE</name> =<init> <expr>10</expr></init></decl>;</decl_stmt>
+
+<cpp:endif>#<cpp:directive>endif</cpp:directive></cpp:endif>
+
+</unit>

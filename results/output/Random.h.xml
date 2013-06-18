@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" language="C" filename="C:/Users/Serenity/SkyDrive/Documents/College/rit_research/xml-parser/results\input_src\Random.h"><typedef>typedef <type><struct>struct
+<block>{
+  <decl_stmt><decl><type><name>int</name></type> <name><name>m</name><index>[<expr>17</expr>]</index></name></decl>;</decl_stmt>                        
+  <decl_stmt><decl><type><name>int</name></type> <name>seed</name></decl>;</decl_stmt>                             
+  <decl_stmt><decl><type><name>int</name></type> <name>i</name></decl>;</decl_stmt>                                <comment type="block">/* originally = 4 */</comment>
+  <decl_stmt><decl><type><name>int</name></type> <name>j</name></decl>;</decl_stmt>                                <comment type="block">/* originally =  16 */</comment>
+  <decl_stmt><decl><type><name>int</name></type> <comment type="block">/*boolean*/</comment> <name>haveRange</name></decl>;</decl_stmt>            <comment type="block">/* = false; */</comment>
+  <decl_stmt><decl><type><name>float</name></type> <name>left</name></decl>;</decl_stmt>                          <comment type="block">/*= 0.0; */</comment>
+  <decl_stmt><decl><type><name>float</name></type> <name>right</name></decl>;</decl_stmt>                         <comment type="block">/* = 1.0; */</comment>
+  <decl_stmt><decl><type><name>float</name></type> <name>width</name></decl>;</decl_stmt>                         <comment type="block">/* = 1.0; */</comment>
+}</block></struct></type>
+<name>Random_struct</name>, *<name>Random</name>;</typedef>
+
+<function_decl><type><name>Random</name></type> <name>new_Random_seed</name><parameter_list>(<param><decl><type><name>int</name></type> <name>seed</name></decl></param>)</parameter_list>;</function_decl>
+<function_decl><type><name>float</name></type> <name>Random_nextDouble</name><parameter_list>(<param><decl><type><name>Random</name></type> <name>R</name></decl></param>)</parameter_list>;</function_decl>
+<function_decl><type><name>void</name></type> <name>Random_delete</name><parameter_list>(<param><decl><type><name>Random</name></type> <name>R</name></decl></param>)</parameter_list>;</function_decl>
+<function_decl><type><name>float</name> *</type><name>RandomVector</name><parameter_list>(<param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>Random</name></type> <name>R</name></decl></param>)</parameter_list>;</function_decl>
+<function_decl><type><name>float</name> **</type><name>RandomMatrix</name><parameter_list>(<param><decl><type><name>int</name></type> <name>M</name></decl></param>, <param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>Random</name></type> <name>R</name></decl></param>)</parameter_list>;</function_decl>
+</unit>

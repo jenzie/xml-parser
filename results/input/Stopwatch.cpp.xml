@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" language="C++" filename="C:/Users/Serenity/SkyDrive/Documents/College/rit_research/xml-parser/results\input_src\Stopwatch.cpp"><cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;stdlib.h&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"Stopwatch.h"</cpp:file></cpp:include>
+
+<function><type><name>double</name></type> <name>seconds</name><parameter_list>()</parameter_list>
+<block>{
+        <return>return <expr>((<name>double</name>) <call><name>clock</name><argument_list>()</argument_list></call>) / (<name>double</name>) <name>CLOCKS_PER_SEC</name></expr>;</return> 
+}</block></function>
+
+<function><type><name>void</name></type> <name>Stopwtach_reset</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>Q</name></decl></param>)</parameter_list>
+<block>{
+    <expr_stmt><expr><name>Q</name>-&gt;<name>running</name> = 0</expr>;</expr_stmt>         <comment type="block">/* false */</comment>
+    <expr_stmt><expr><name>Q</name>-&gt;<name>last_time</name> = 0.0</expr>;</expr_stmt>
+    <expr_stmt><expr><name>Q</name>-&gt;<name>total</name>= 0.0</expr>;</expr_stmt>
+}</block></function>
+
+
+<function><type><name>Stopwatch</name></type> <name>new_Stopwatch</name><parameter_list>(<param><decl><type><name>void</name></type></decl></param>)</parameter_list>
+<block>{
+    <decl_stmt><decl><type><name>Stopwatch</name></type> <name>S</name> =<init> <expr>(<name>Stopwatch</name>) <call><name>malloc</name><argument_list>(<argument><expr><call><name>sizeof</name><argument_list>(<argument><expr><name>Stopwatch_struct</name></expr></argument>)</argument_list></call></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+    <if>if <condition>(<expr><name>S</name> == <name>NULL</name></expr>)</condition><then>
+        <return>return <expr><name>NULL</name></expr>;</return></then></if>
+
+    <expr_stmt><expr><call><name>Stopwtach_reset</name><argument_list>(<argument><expr><name>S</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+    <return>return <expr><name>S</name></expr>;</return>
+}</block></function>
+
+<function><type><name>void</name></type> <name>Stopwatch_delete</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>S</name></decl></param>)</parameter_list>
+<block>{
+    <if>if <condition>(<expr><name>S</name> != <name>NULL</name></expr>)</condition><then>
+        <expr_stmt><expr><call><name>free</name><argument_list>(<argument><expr><name>S</name></expr></argument>)</argument_list></call></expr>;</expr_stmt></then></if>
+}</block></function>
+
+
+<comment type="block">/* Start resets the timer to 0.0; use resume for continued total */</comment>
+
+<function><type><name>void</name></type> <name>Stopwatch_start</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>Q</name></decl></param>)</parameter_list>
+<block>{
+    <if>if <condition>(<expr>! (<name>Q</name>-&gt;<name>running</name>)</expr>  )</condition><then>
+    <block>{
+        <expr_stmt><expr><name>Q</name>-&gt;<name>running</name> = 1</expr>;</expr_stmt>  <comment type="block">/* true */</comment>
+        <expr_stmt><expr><name>Q</name>-&gt;<name>total</name> = 0.0</expr>;</expr_stmt>
+        <expr_stmt><expr><name>Q</name>-&gt;<name>last_time</name> = <call><name>seconds</name><argument_list>()</argument_list></call></expr>;</expr_stmt>
+    }</block></then></if>
+}</block></function>
+   
+<comment type="block">/** 
+    Resume timing, after stopping.  (Does not wipe out
+        accumulated times.)
+
+*/</comment>
+
+<function><type><name>void</name></type> <name>Stopwatch_resume</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>Q</name></decl></param>)</parameter_list>
+<block>{
+    <if>if <condition>(<expr>!(<name>Q</name>-&gt;<name>running</name>)</expr>)</condition><then>
+    <block>{
+        <expr_stmt><expr><name>Q</name>-&gt; <name>last_time</name> = <call><name>seconds</name><argument_list>()</argument_list></call></expr>;</expr_stmt> 
+        <expr_stmt><expr><name>Q</name>-&gt;<name>running</name> = 1</expr>;</expr_stmt>  <comment type="block">/*true*/</comment>
+    }</block></then></if>
+}</block></function>
+   
+<function><type><name>void</name></type> <name>Stopwatch_stop</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>Q</name></decl></param>)</parameter_list>  
+<block>{ 
+    <if>if <condition>(<expr><name>Q</name>-&gt;<name>running</name></expr>)</condition><then> 
+    <block>{ 
+        <expr_stmt><expr><name>Q</name>-&gt;<name>total</name> += <call><name>seconds</name><argument_list>()</argument_list></call> - <name>Q</name>-&gt;<name>last_time</name></expr>;</expr_stmt> 
+        <expr_stmt><expr><name>Q</name>-&gt;<name>running</name> = 0</expr>;</expr_stmt>  <comment type="block">/* false */</comment>
+    }</block></then></if>
+}</block></function>
+  
+ 
+<function><type><name>double</name></type> <name>Stopwatch_read</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>Q</name></decl></param>)</parameter_list>
+<block>{  
+    
+    <if>if <condition>(<expr><name>Q</name>-&gt;<name>running</name></expr>)</condition><then> 
+    <block>{
+        <decl_stmt><decl><type><name>double</name></type> <name>t</name> =<init> <expr><call><name>seconds</name><argument_list>()</argument_list></call></expr></init></decl>;</decl_stmt>
+        <expr_stmt><expr><name>Q</name>-&gt;<name>total</name> += <name>t</name> - <name>Q</name>-&gt;<name>last_time</name></expr>;</expr_stmt>
+        <expr_stmt><expr><name>Q</name>-&gt;<name>last_time</name> = <name>t</name></expr>;</expr_stmt>
+    }</block></then></if>
+    <return>return <expr><name>Q</name>-&gt;<name>total</name></expr>;</return>
+}</block></function>
+        
+</unit>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" language="C" filename="C:/Users/Serenity/SkyDrive/Documents/College/rit_research/xml-parser/results\input_src\Stopwatch.h">
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;time.h&gt;</cpp:file></cpp:include>
+
+<typedef>typedef <type><struct>struct<block>{
+    <decl_stmt><decl><type><name>int</name></type> <name>running</name></decl>;</decl_stmt>        <comment type="block">/* boolean */</comment>
+    <decl_stmt><decl><type><name>float</name></type> <name>last_time</name></decl>;</decl_stmt>
+    <decl_stmt><decl><type><name>float</name></type> <name>total</name></decl>;</decl_stmt>
+
+}</block></struct></type> *<name>Stopwatch</name>, <name>Stopwatch_struct</name>;</typedef>
+
+
+
+<function_decl><type><name>float</name></type> <name>seconds</name><parameter_list>()</parameter_list>;</function_decl>
+
+<function_decl><type><name>void</name></type> <name>Stopwtach_reset</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>Q</name></decl></param>)</parameter_list>;</function_decl>
+
+<function_decl><type><name>Stopwatch</name></type> <name>new_Stopwatch</name><parameter_list>(<param><decl><type><name>void</name></type></decl></param>)</parameter_list>;</function_decl>
+<function_decl><type><name>void</name></type> <name>Stopwatch_delete</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>S</name></decl></param>)</parameter_list>;</function_decl>
+<function_decl><type><name>void</name></type> <name>Stopwatch_start</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>Q</name></decl></param>)</parameter_list>;</function_decl>
+<function_decl><type><name>void</name></type> <name>Stopwatch_resume</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>Q</name></decl></param>)</parameter_list>;</function_decl>
+<function_decl><type><name>void</name></type> <name>Stopwatch_stop</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>Q</name></decl></param>)</parameter_list>;</function_decl>
+<function_decl><type><name>float</name></type> <name>Stopwatch_read</name><parameter_list>(<param><decl><type><name>Stopwatch</name></type> <name>Q</name></decl></param>)</parameter_list>;</function_decl>
+        
+</unit>

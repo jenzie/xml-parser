@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" language="C++" filename="C:/Users/Serenity/SkyDrive/Documents/College/rit_research/xml-parser/results\input_src\scimark2.cpp"><cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;stdio.h&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;stdlib.h&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;string.h&gt;</cpp:file></cpp:include>
+
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"Random.h"</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"kernel.h"</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"constants.h"</cpp:file></cpp:include>
+
+<function_decl><type><name>void</name></type> <name>print_banner</name><parameter_list>(<param><decl><type><name>void</name></type></decl></param>)</parameter_list>;</function_decl>
+
+<function><type><name>int</name></type> <name>main</name><parameter_list>(<param><decl><type><name>int</name></type> <name>argc</name></decl></param>, <param><decl><type><name>char</name> *</type><name><name>argv</name><index>[]</index></name></decl></param>)</parameter_list>
+<block>{
+        <comment type="block">/* default to the (small) cache-contained version */</comment>
+
+        <decl_stmt><decl><type><name>float</name></type> <name>min_time</name> =<init> <expr><name>RESOLUTION_DEFAULT</name></expr></init></decl>;</decl_stmt>
+
+        <decl_stmt><decl><type><name>int</name></type> <name>FFT_size</name> =<init> <expr><name>FFT_SIZE</name></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>SOR_size</name> =<init>  <expr><name>SOR_SIZE</name></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>Sparse_size_M</name> =<init> <expr><name>SPARSE_SIZE_M</name></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>Sparse_size_nz</name> =<init> <expr><name>SPARSE_SIZE_nz</name></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>LU_size</name> =<init> <expr><name>LU_SIZE</name></expr></init></decl>;</decl_stmt>
+
+
+        <comment type="block">/* run the benchmark */</comment>
+
+        <decl_stmt><decl><type><name>float</name></type> <name><name>res</name><index>[<expr>6</expr>]</index></name> =<init> <expr><block>{<expr>0.0</expr>}</block></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>Random</name></type> <name>R</name> =<init> <expr><call><name>new_Random_seed</name><argument_list>(<argument><expr><name>RANDOM_SEED</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+
+
+        <if>if <condition>(<expr><name>argc</name> &gt; 1</expr>)</condition><then>
+        <block>{
+			<decl_stmt><decl><type><name>int</name></type> <name>current_arg</name> =<init> <expr>1</expr></init></decl>;</decl_stmt>
+
+			<if>if <condition>(<expr><call><name>strcmp</name><argument_list>(<argument><expr><name><name>argv</name><index>[<expr>1</expr>]</index></name></expr></argument>, <argument><expr>"-help"</expr></argument>)</argument_list></call>==0  ||
+					<call><name>strcmp</name><argument_list>(<argument><expr><name><name>argv</name><index>[<expr>1</expr>]</index></name></expr></argument>, <argument><expr>"-h"</expr></argument>)</argument_list></call> == 0</expr>)</condition><then>
+			<block>{
+				<expr_stmt><expr><call><name>fprintf</name><argument_list>(<argument><expr><name>stderr</name></expr></argument>, <argument><expr>"Usage: [-large] [minimum_time]\n"</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+				<expr_stmt><expr><call><name>exit</name><argument_list>(<argument><expr>0</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+			}</block></then></if>
+
+			<if>if <condition>(<expr><call><name>strcmp</name><argument_list>(<argument><expr><name><name>argv</name><index>[<expr>1</expr>]</index></name></expr></argument>, <argument><expr>"-large"</expr></argument>)</argument_list></call>==0</expr>)</condition><then>
+			<block>{
+				<expr_stmt><expr><name>FFT_size</name> = <name>LG_FFT_SIZE</name></expr>;</expr_stmt>
+				<expr_stmt><expr><name>SOR_size</name> = <name>LG_SOR_SIZE</name></expr>;</expr_stmt>
+				<expr_stmt><expr><name>Sparse_size_M</name> = <name>LG_SPARSE_SIZE_M</name></expr>;</expr_stmt>
+				<expr_stmt><expr><name>Sparse_size_nz</name> = <name>LG_SPARSE_SIZE_nz</name></expr>;</expr_stmt>
+				<expr_stmt><expr><name>LU_size</name> = <name>LG_LU_SIZE</name></expr>;</expr_stmt>
+
+				<expr_stmt><expr><name>current_arg</name>++</expr>;</expr_stmt>
+			}</block></then></if>
+
+			<if>if <condition>(<expr><name>current_arg</name> &lt; <name>argc</name></expr>)</condition><then>
+			<block>{
+				<expr_stmt><expr><name>min_time</name> = <call><name>atof</name><argument_list>(<argument><expr><name><name>argv</name><index>[<expr><name>current_arg</name></expr>]</index></name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+			}</block></then></if>
+			
+        }</block></then></if>
+
+	
+		<expr_stmt><expr><call><name>print_banner</name><argument_list>()</argument_list></call></expr>;</expr_stmt>
+		<expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"Using %10.2f seconds min time per kenel.\n"</expr></argument>, <argument><expr><name>min_time</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+        <expr_stmt><expr><name><name>res</name><index>[<expr>1</expr>]</index></name> = <call><name>kernel_measureFFT</name><argument_list>( <argument><expr><name>FFT_size</name></expr></argument>, <argument><expr><name>min_time</name></expr></argument>, <argument><expr><name>R</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>   
+        <expr_stmt><expr><name><name>res</name><index>[<expr>2</expr>]</index></name> = <call><name>kernel_measureSOR</name><argument_list>( <argument><expr><name>SOR_size</name></expr></argument>, <argument><expr><name>min_time</name></expr></argument>, <argument><expr><name>R</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>   
+        <expr_stmt><expr><name><name>res</name><index>[<expr>3</expr>]</index></name> = <call><name>kernel_measureMonteCarlo</name><argument_list>(<argument><expr><name>min_time</name></expr></argument>, <argument><expr><name>R</name></expr></argument>)</argument_list></call></expr>;</expr_stmt> 
+        <expr_stmt><expr><name><name>res</name><index>[<expr>4</expr>]</index></name> = <call><name>kernel_measureSparseMatMult</name><argument_list>( <argument><expr><name>Sparse_size_M</name></expr></argument>, 
+                <argument><expr><name>Sparse_size_nz</name></expr></argument>, <argument><expr><name>min_time</name></expr></argument>, <argument><expr><name>R</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>           
+        <expr_stmt><expr><name><name>res</name><index>[<expr>5</expr>]</index></name> = <call><name>kernel_measureLU</name><argument_list>( <argument><expr><name>LU_size</name></expr></argument>, <argument><expr><name>min_time</name></expr></argument>, <argument><expr><name>R</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>  
+
+
+
+        <expr_stmt><expr><name><name>res</name><index>[<expr>0</expr>]</index></name> = (<name><name>res</name><index>[<expr>1</expr>]</index></name> + <name><name>res</name><index>[<expr>2</expr>]</index></name> + <name><name>res</name><index>[<expr>3</expr>]</index></name> + <name><name>res</name><index>[<expr>4</expr>]</index></name> + <name><name>res</name><index>[<expr>5</expr>]</index></name>) / 5</expr>;</expr_stmt>
+
+        <comment type="block">/* print out results  */</comment>
+        <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"Composite Score:        %8.2f\n"</expr></argument> ,<argument><expr><name><name>res</name><index>[<expr>0</expr>]</index></name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"FFT             Mflops: %8.2f    (N=%d)\n"</expr></argument>, <argument><expr><name><name>res</name><index>[<expr>1</expr>]</index></name></expr></argument>, <argument><expr><name>FFT_size</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"SOR             Mflops: %8.2f    (%d x %d)\n"</expr></argument>, 		
+				<argument><expr><name><name>res</name><index>[<expr>2</expr>]</index></name></expr></argument>, <argument><expr><name>SOR_size</name></expr></argument>, <argument><expr><name>SOR_size</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"MonteCarlo:     Mflops: %8.2f\n"</expr></argument>, <argument><expr><name><name>res</name><index>[<expr>3</expr>]</index></name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"Sparse matmult  Mflops: %8.2f    (N=%d, nz=%d)\n"</expr></argument>, <argument><expr><name><name>res</name><index>[<expr>4</expr>]</index></name></expr></argument>, 
+					<argument><expr><name>Sparse_size_M</name></expr></argument>, <argument><expr><name>Sparse_size_nz</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+        <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"LU              Mflops: %8.2f    (M=%d, N=%d)\n"</expr></argument>, <argument><expr><name><name>res</name><index>[<expr>5</expr>]</index></name></expr></argument>,
+				<argument><expr><name>LU_size</name></expr></argument>, <argument><expr><name>LU_size</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+
+        <expr_stmt><expr><call><name>Random_delete</name><argument_list>(<argument><expr><name>R</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+        <return>return <expr>0</expr>;</return>
+  
+}</block></function>
+
+<function><type><name>void</name></type> <name>print_banner</name><parameter_list>()</parameter_list>
+<block>{
+ <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"**                                                              **\n"</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+ <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"** SciMark2 Numeric Benchmark, see http://math.nist.gov/scimark **\n"</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+ <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"** for details. (Results can be submitted to pozo@nist.gov)     **\n"</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+ <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"**                                                              **\n"</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+}</block></function>
+</unit>

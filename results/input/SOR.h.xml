@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" language="C" filename="C:/Users/Serenity/SkyDrive/Documents/College/rit_research/xml-parser/results\input_src\SOR.h">
+<function_decl><type><name>double</name></type> <name>SOR_num_flops</name><parameter_list>(<param><decl><type><name>int</name></type> <name>M</name></decl></param>, <param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>int</name></type> <name>num_iterations</name></decl></param>)</parameter_list>;</function_decl>
+<function_decl><type><name>void</name></type> <name>SOR_execute</name><parameter_list>(<param><decl><type><name>int</name></type> <name>M</name></decl></param>, <param><decl><type><name>int</name></type> <name>N</name></decl></param>,<param><decl><type><name>double</name></type> <name>omega</name></decl></param>, <param><decl><type><name>double</name> **</type><name>G</name></decl></param>, <param><decl><type><name>int</name></type> <name>num_iterations</name></decl></param>, <param><decl><type><name>int</name></type> <name>print</name></decl></param>)</parameter_list>;</function_decl>
+
+</unit>

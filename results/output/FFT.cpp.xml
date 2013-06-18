@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" language="C++" filename="C:/Users/Serenity/SkyDrive/Documents/College/rit_research/xml-parser/results\input_src\FFT.cpp"><cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;stdio.h&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;stdlib.h&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;math.h&gt;</cpp:file></cpp:include>
+
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>"FFT.h"</cpp:file></cpp:include>
+
+<cpp:define>#<cpp:directive>define</cpp:directive> <name>PI</name>  3.1415926535897932</cpp:define>
+
+<comment type="block">/*-----------------------------------------------------------------------*/</comment>
+
+<function_decl><type><name>static</name> <name>int</name></type> <name>int_log2</name><parameter_list>(<param><decl><type><name>int</name></type> <name>n</name></decl></param>)</parameter_list>;</function_decl>
+
+<function><type><name>float</name></type> <name>FFT_num_flops</name><parameter_list>(<param><decl><type><name>int</name></type> <name>N</name></decl></param>)</parameter_list>
+<block>{
+
+     <decl_stmt><decl><type><name>float</name></type> <name>Nd</name> =<init> <expr>(<name>float</name>) <name>N</name></expr></init></decl>;</decl_stmt>
+     <decl_stmt><decl><type><name>float</name></type> <name>logN</name> =<init> <expr>(<name>float</name>) <call><name>int_log2</name><argument_list>(<argument><expr><name>N</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+
+     <return>return <expr>(5.0*<name>Nd</name>-2)*<name>logN</name> + 2*(<name>Nd</name>+1)</expr>;</return>
+}</block></function>
+
+<function><type><name>static</name> <name>int</name></type> <name>int_log2</name> <parameter_list>(<param><decl><type><name>int</name></type> <name>n</name></decl></param>)</parameter_list>
+<block>{
+    <decl_stmt><decl><type><name>int</name></type> <name>k</name> =<init> <expr>1</expr></init></decl>;</decl_stmt>
+    <decl_stmt><decl><type><name>int</name></type> <name>log</name> =<init> <expr>0</expr></init></decl>;</decl_stmt>
+    <for>for(<comment type="block">/*k=1*/</comment><init>;</init> <condition><expr><name>k</name> &lt; <name>n</name></expr>;</condition> <incr><expr><name>k</name> *= 2</expr>, <expr><name>log</name>++</expr></incr>)<empty_stmt>;</empty_stmt></for>
+    <if>if <condition>(<expr><name>n</name> != (1 &lt;&lt; <name>log</name>)</expr>)</condition><then>
+    <block>{
+      <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"FFT: Data length is not a power of 2!: %d "</expr></argument>,<argument><expr><name>n</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+      <expr_stmt><expr><call><name>exit</name><argument_list>(<argument><expr>1</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+    }</block></then></if>
+    <return>return <expr><name>log</name></expr>;</return> 
+}</block></function>
+
+<comment type="line">// MODIFIED FOR TEST CODE</comment>
+<function><type><name>static</name> <name>void</name></type> <name>FFT_transform_internal</name> <parameter_list>(<param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>float</name> *</type><name>data</name></decl></param>, <param><decl><type><name>int</name></type> <name>direction</name></decl></param>, <param><decl><type><name>int</name></type> <name>print</name></decl></param>)</parameter_list> <block>{
+    <decl_stmt><decl><type><name>int</name></type> <name>n</name> =<init> <expr><name>N</name>/2</expr></init></decl>;</decl_stmt>
+    <decl_stmt><decl><type><name>int</name></type> <name>bit</name> =<init> <expr>0</expr></init></decl>;</decl_stmt>
+    <decl_stmt><decl><type><name>int</name></type> <name>logn</name></decl>;</decl_stmt>
+    <decl_stmt><decl><type><name>int</name></type> <name>dual</name> =<init> <expr>1</expr></init></decl>;</decl_stmt>
+
+    <if>if <condition>(<expr><name>n</name> == 1</expr>)</condition><then> <return>return;</return></then></if>         <comment type="block">/* Identity operation! */</comment>
+    <expr_stmt><expr><name>logn</name> = <call><name>int_log2</name><argument_list>(<argument><expr><name>n</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+
+    <if>if <condition>(<expr><name>N</name> == 0</expr>)</condition><then> <return>return;</return></then></if>    
+
+    <comment type="block">/* bit reverse the input data for decimation in time algorithm */</comment>
+    <expr_stmt><expr><call><name>FFT_bitreverse</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>data</name></expr></argument>)</argument_list></call></expr> ;</expr_stmt>
+
+    <comment type="block">/* apply fft recursion */</comment>
+    <comment type="block">/* this loop executed int_log2(N) times */</comment>
+    <for>for (<init><expr><name>bit</name> = 0</expr>;</init> <condition><expr><name>bit</name> &lt; <name>logn</name></expr>;</condition> <incr><expr><name>bit</name>++</expr>, <expr><name>dual</name> *= 2</expr></incr>) <block>{
+      <decl_stmt><decl><type><name>float</name></type> <name>w_real</name> =<init> <expr>1.0</expr></init></decl>;</decl_stmt>
+      <decl_stmt><decl><type><name>float</name></type> <name>w_imag</name> =<init> <expr>0.0</expr></init></decl>;</decl_stmt>
+      <decl_stmt><decl><type><name>int</name></type> <name>a</name></decl>;</decl_stmt>
+      <decl_stmt><decl><type><name>int</name></type> <name>b</name></decl>;</decl_stmt>
+
+      <decl_stmt><decl><type><name>float</name></type> <name>theta</name> =<init> <expr>2.0 * <name>direction</name> * <name>PI</name> / (2.0 * (<name>float</name>) <name>dual</name>)</expr></init></decl>;</decl_stmt>
+      <decl_stmt><decl><type><name>float</name></type> <name>s</name> =<init> <expr><call><name>sin</name><argument_list>(<argument><expr><name>theta</name></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+      <decl_stmt><decl><type><name>float</name></type> <name>t</name> =<init> <expr><call><name>sin</name><argument_list>(<argument><expr><name>theta</name> / 2.0</expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+      <decl_stmt><decl><type><name>float</name></type> <name>s2</name> =<init> <expr>2.0 * <name>t</name> * <name>t</name></expr></init></decl>;</decl_stmt>
+
+      <for>for (<init><expr><name>a</name>=0</expr>, <expr><name>b</name> = 0</expr>;</init> <condition><expr><name>b</name> &lt; <name>n</name></expr>;</condition> <incr><expr><name>b</name> += 2 * <name>dual</name></expr></incr>) <block>{
+        <decl_stmt><decl><type><name>int</name></type> <name>i</name> =<init> <expr>2*<name>b</name></expr></init></decl> ;</decl_stmt>
+        <decl_stmt><decl><type><name>int</name></type> <name>j</name> =<init> <expr>2*(<name>b</name> + <name>dual</name>)</expr></init></decl>;</decl_stmt>
+
+        <decl_stmt><decl><type><name>float</name></type> <name>wd_real</name> =<init> <expr><name><name>data</name><index>[<expr><name>j</name></expr>]</index></name></expr></init></decl> ;</decl_stmt>
+        <decl_stmt><decl><type><name>float</name></type> <name>wd_imag</name> =<init> <expr><name><name>data</name><index>[<expr><name>j</name>+1</expr>]</index></name></expr></init></decl> ;</decl_stmt>
+          
+        <expr_stmt><expr><name><name>data</name><index>[<expr><name>j</name></expr>]</index></name>   = <name><name>data</name><index>[<expr><name>i</name></expr>]</index></name>   - <name>wd_real</name></expr>;</expr_stmt>
+        <expr_stmt><expr><name><name>data</name><index>[<expr><name>j</name>+1</expr>]</index></name> = <name><name>data</name><index>[<expr><name>i</name>+1</expr>]</index></name> - <name>wd_imag</name></expr>;</expr_stmt>
+        <expr_stmt><expr><name><name>data</name><index>[<expr><name>i</name></expr>]</index></name>  += <name>wd_real</name></expr>;</expr_stmt>
+        <expr_stmt><expr><name><name>data</name><index>[<expr><name>i</name>+1</expr>]</index></name>+= <name>wd_imag</name></expr>;</expr_stmt>
+      }</block></for>
+      
+      <comment type="block">/* a = 1 .. (dual-1) */</comment>
+      <for>for (<init><expr><name>a</name> = 1</expr>;</init> <condition><expr><name>a</name> &lt; <name>dual</name></expr>;</condition> <incr><expr><name>a</name>++</expr></incr>) <block>{
+        <comment type="block">/* trignometric recurrence for w-&gt; exp(i theta) w */</comment>
+        <block>{
+          <decl_stmt><decl><type><name>float</name></type> <name>tmp_real</name> =<init> <expr><name>w_real</name> - <name>s</name> * <name>w_imag</name> - <name>s2</name> * <name>w_real</name></expr></init></decl>;</decl_stmt>
+          <decl_stmt><decl><type><name>float</name></type> <name>tmp_imag</name> =<init> <expr><name>w_imag</name> + <name>s</name> * <name>w_real</name> - <name>s2</name> * <name>w_imag</name></expr></init></decl>;</decl_stmt>
+          <expr_stmt><expr><name>w_real</name> = <name>tmp_real</name></expr>;</expr_stmt>
+          <expr_stmt><expr><name>w_imag</name> = <name>tmp_imag</name></expr>;</expr_stmt>
+        }</block>
+        <for>for (<init><expr><name>b</name> = 0</expr>;</init> <condition><expr><name>b</name> &lt; <name>n</name></expr>;</condition> <incr><expr><name>b</name> += 2 * <name>dual</name></expr></incr>) <block>{
+          <decl_stmt><decl><type><name>int</name></type> <name>i</name> =<init> <expr>2*(<name>b</name> + <name>a</name>)</expr></init></decl>;</decl_stmt>
+          <decl_stmt><decl><type><name>int</name></type> <name>j</name> =<init> <expr>2*(<name>b</name> + <name>a</name> + <name>dual</name>)</expr></init></decl>;</decl_stmt>
+
+          <decl_stmt><decl><type><name>float</name></type> <name>z1_real</name> =<init> <expr><name><name>data</name><index>[<expr><name>j</name></expr>]</index></name></expr></init></decl>;</decl_stmt>
+          <decl_stmt><decl><type><name>float</name></type> <name>z1_imag</name> =<init> <expr><name><name>data</name><index>[<expr><name>j</name>+1</expr>]</index></name></expr></init></decl>;</decl_stmt>
+              
+          <decl_stmt><decl><type><name>float</name></type> <name>wd_real</name> =<init> <expr><name>w_real</name> * <name>z1_real</name> - <name>w_imag</name> * <name>z1_imag</name></expr></init></decl>;</decl_stmt>
+          <decl_stmt><decl><type><name>float</name></type> <name>wd_imag</name> =<init> <expr><name>w_real</name> * <name>z1_imag</name> + <name>w_imag</name> * <name>z1_real</name></expr></init></decl>;</decl_stmt>
+
+          <expr_stmt><expr><name><name>data</name><index>[<expr><name>j</name></expr>]</index></name>   = <name><name>data</name><index>[<expr><name>i</name></expr>]</index></name>   - <name>wd_real</name></expr>;</expr_stmt>
+          <expr_stmt><expr><name><name>data</name><index>[<expr><name>j</name>+1</expr>]</index></name> = <name><name>data</name><index>[<expr><name>i</name>+1</expr>]</index></name> - <name>wd_imag</name></expr>;</expr_stmt>
+          <expr_stmt><expr><name><name>data</name><index>[<expr><name>i</name></expr>]</index></name>  += <name>wd_real</name></expr>;</expr_stmt>
+          <expr_stmt><expr><name><name>data</name><index>[<expr><name>i</name>+1</expr>]</index></name>+= <name>wd_imag</name></expr>;</expr_stmt>
+        }</block></for>
+      }</block></for>
+    }</block></for>
+    
+    <comment type="line">// ADDED TEST OUTPUT, print the results</comment>
+    <if>if<condition>( <expr><name>print</name></expr> )</condition><then>
+      <block>{
+	<for>for(<init><decl><type><name>int</name></type> <name>x</name> =<init> <expr>0</expr></init></decl>;</init> <condition><expr><name>x</name> &lt; <name>N</name></expr>;</condition> <incr><expr><name>x</name>++</expr></incr>)
+	  <block>{
+	    <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"%f "</expr></argument>, <argument><expr><name><name>data</name><index>[<expr><name>x</name></expr>]</index></name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+	  }</block></for>
+	<expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr>"\n"</expr></argument>)</argument_list></call></expr>;</expr_stmt>
+      }</block></then></if>
+  }</block></function>
+
+
+<function><type><name>void</name></type> <name>FFT_bitreverse</name><parameter_list>(<param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>float</name> *</type><name>data</name></decl></param>)</parameter_list> <block>{
+    <comment type="block">/* This is the Goldrader bit-reversal algorithm */</comment>
+    <decl_stmt><decl><type><name>int</name></type> <name>n</name>=<init><expr><name>N</name>/2</expr></init></decl>;</decl_stmt>
+    <decl_stmt><decl><type><name>int</name></type> <name>nm1</name> =<init> <expr><name>n</name>-1</expr></init></decl>;</decl_stmt>
+    <decl_stmt><decl><type><name>int</name></type> <name>i</name>=<init><expr>0</expr></init></decl>;</decl_stmt> 
+    <decl_stmt><decl><type><name>int</name></type> <name>j</name>=<init><expr>0</expr></init></decl>;</decl_stmt>
+    <for>for (<init>;</init> <condition><expr><name>i</name> &lt; <name>nm1</name></expr>;</condition> <incr><expr><name>i</name>++</expr></incr>) <block>{
+
+      <comment type="block">/*int ii = 2*i; */</comment>
+      <decl_stmt><decl><type><name>int</name></type> <name>ii</name> =<init> <expr><name>i</name> &lt;&lt; 1</expr></init></decl>;</decl_stmt>
+
+      <comment type="block">/*int jj = 2*j; */</comment>
+      <decl_stmt><decl><type><name>int</name></type> <name>jj</name> =<init> <expr><name>j</name> &lt;&lt; 1</expr></init></decl>;</decl_stmt>
+
+      <comment type="block">/* int k = n / 2 ; */</comment>
+      <decl_stmt><decl><type><name>int</name></type> <name>k</name> =<init> <expr><name>n</name> &gt;&gt; 1</expr></init></decl>;</decl_stmt>
+
+      <if>if <condition>(<expr><name>i</name> &lt; <name>j</name></expr>)</condition><then> <block>{
+        <decl_stmt><decl><type><name>float</name></type> <name>tmp_real</name>    =<init> <expr><name><name>data</name><index>[<expr><name>ii</name></expr>]</index></name></expr></init></decl>;</decl_stmt>
+        <decl_stmt><decl><type><name>float</name></type> <name>tmp_imag</name>    =<init> <expr><name><name>data</name><index>[<expr><name>ii</name>+1</expr>]</index></name></expr></init></decl>;</decl_stmt>
+        <expr_stmt><expr><name><name>data</name><index>[<expr><name>ii</name></expr>]</index></name>   = <name><name>data</name><index>[<expr><name>jj</name></expr>]</index></name></expr>;</expr_stmt>
+        <expr_stmt><expr><name><name>data</name><index>[<expr><name>ii</name>+1</expr>]</index></name> = <name><name>data</name><index>[<expr><name>jj</name>+1</expr>]</index></name></expr>;</expr_stmt>
+        <expr_stmt><expr><name><name>data</name><index>[<expr><name>jj</name></expr>]</index></name>   = <name>tmp_real</name></expr>;</expr_stmt>
+        <expr_stmt><expr><name><name>data</name><index>[<expr><name>jj</name>+1</expr>]</index></name> = <name>tmp_imag</name></expr>;</expr_stmt> }</block></then></if>
+
+      <while>while <condition>(<expr><name>k</name> &lt;= <name>j</name></expr>)</condition> 
+      <block>{
+        <comment type="block">/*j = j - k ; */</comment>
+        <expr_stmt><expr><name>j</name> -= <name>k</name></expr>;</expr_stmt>
+
+        <comment type="block">/*k = k / 2 ;  */</comment>
+        <expr_stmt><expr><name>k</name> &gt;&gt;= 1</expr> ;</expr_stmt> 
+      }</block></while>
+      <expr_stmt><expr><name>j</name> += <name>k</name></expr> ;</expr_stmt>
+    }</block></for>
+  }</block></function>
+
+<comment type="line">// MODIFIED FOR TEST CODE</comment>
+<function><type><name>void</name></type> <name>FFT_transform</name><parameter_list>(<param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>float</name> *</type><name>data</name></decl></param>, <param><decl><type><name>int</name></type> <name>print</name></decl></param>)</parameter_list>
+<block>{
+  <expr_stmt><expr><call><name>FFT_transform_internal</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>data</name></expr></argument>, <argument><expr>-1</expr></argument>, <argument><expr><name>print</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+}</block></function>
+
+
+<function><type><name>void</name></type> <name>FFT_inverse</name><parameter_list>(<param><decl><type><name>int</name></type> <name>N</name></decl></param>, <param><decl><type><name>float</name> *</type><name>data</name></decl></param>, <param><decl><type><name>int</name></type> <name>print</name></decl></param>)</parameter_list>
+<block>{
+    <decl_stmt><decl><type><name>int</name></type> <name>n</name> =<init> <expr><name>N</name>/2</expr></init></decl>;</decl_stmt>
+    <decl_stmt><decl><type><name>float</name></type> <name>norm</name> =<init> <expr>0.0</expr></init></decl>;</decl_stmt>
+    <decl_stmt><decl><type><name>int</name></type> <name>i</name>=<init><expr>0</expr></init></decl>;</decl_stmt>
+    <expr_stmt><expr><call><name>FFT_transform_internal</name><argument_list>(<argument><expr><name>N</name></expr></argument>, <argument><expr><name>data</name></expr></argument>, <argument><expr>+1</expr></argument>, <argument><expr><name>print</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+
+    <comment type="block">/* Normalize */</comment>
+
+
+    <expr_stmt><expr><name>norm</name>=1/((<name>float</name>) <name>n</name>)</expr>;</expr_stmt>
+    <for>for(<init><expr><name>i</name>=0</expr>;</init> <condition><expr><name>i</name>&lt;<name>N</name></expr>;</condition> <incr><expr><name>i</name>++</expr></incr>)
+      <expr_stmt><expr><name><name>data</name><index>[<expr><name>i</name></expr>]</index></name> *= <name>norm</name></expr>;</expr_stmt></for>
+  
+}</block></function>
+
+
+</unit>
