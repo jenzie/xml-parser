@@ -204,6 +204,12 @@ sub main {
 
     # Run the .exe
     system("\"output_src\\scimark_v1.exe\" > \"output_src\\scimark_v1.txt\"");
+	
+	print "Generating summary report.\n";
+	
+	# Generate summary report
+	system("java -jar \"report-generator.exe\" 
+			\"results\\output.txt\" \"results\\summary,txt\"");
 }
 
 main();

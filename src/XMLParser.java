@@ -30,7 +30,7 @@ public class XMLParser {
 		try {
 			input = new Scanner(new File(inputXML)); // directory, file
 		} catch (FileNotFoundException e) {
-			System.err.println("Usage: java XMLParser.java INPUT.xml OUTPUT.xml");
+			System.err.println("Usage: java xml-parser.java INPUT.xml OUTPUT.xml");
 			System.exit(0);
 		}
 		run();
@@ -51,7 +51,7 @@ public class XMLParser {
 		}
 
 		if(!status) {
-			System.err.println("Usage: java XMLParser.java INPUT.xml OUTPUT.xml");
+			System.err.println("Usage: java xml-parser.java INPUT.xml OUTPUT.xml");
 			System.exit(0);
 		}
 
