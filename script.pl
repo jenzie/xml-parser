@@ -171,45 +171,46 @@ sub procdir {
 # Runs the program
 sub main {
 
-    print "(1/6) Setting the root and syncing all subdirectories.\n";
+    print "(1/9) Setting the root and syncing all subdirectories.\n";
 
     # Set the root and create the directories
     setrootdir(getcwd());
     syncdirs("input_src", "input", "output", "output_src");
 
-    print "(2/6) Converting source files to .xml files.\n";
+    print "(2/9) Converting source files to .xml files.\n";
 
     # Convert .cpp and .h files to .xml files
     procdir("\"srcml\\src2srcml.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
         "input_src", "input", "%FILENAME%.%ORIGEXT%.xml", ".cpp", ".h");
 
-    print "(3/6) Performing approximation on .xml files.\n";
+    print "(3/9) Performing approximation on .xml files.\n";
 
     # Perform approximation on .xml files
     procdir("java -jar \"xml-parser.jar\" %INPUT_DIR% %OUTPUT_DIR%",
         "input", "output", "%FILENAME%.%ORIGEXT%", ".xml");
 
-    print "(4/6) Converting .xml files to source files.\n";
+    print "(4/9) Converting .xml files to source files.\n";
 
     # Convert .xml files to .cpp and .h files
     procdir("\"srcml\\srcml2src.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
         "output", "output_src", "%FILENAME%", ".xml");
 
-    print "(5/6) Compiling the source files.\n";
+    print "(5/9) Compiling the source files.\n";
 
     # Compile the .cpp files
     system("g++ \"output_src\\*.cpp\" -o \"output_src\\scimark_v1.exe\"");
 
-    print "(6/6) Running the executable file.\n";
+    print "(6/9) Running the executable file.\n";
 
     # Run the .exe
     system("\"output_src\\scimark_v1.exe\" > \"output_src\\scimark_v1.txt\"");
-	
-	print "Generating summary report.\n";
+
+	print "(7/9) Performing time calculations.\n";
+	print "(8/9) Performing memory usage calculations.\n";
+	print "(9/9) Generating summary report.\n";
 	
 	# Generate summary report
-	system("java -jar \"report-generator.jar\"
-			\"results\\output.txt\" \"results\\summary,txt\"");
+	system("java -jar \"report-generator.jar\" \"output.txt\" \"summary.txt\"");
 }
 
 main();
