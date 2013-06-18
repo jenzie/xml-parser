@@ -4,244 +4,229 @@ use strict;
 use warnings;
 use Cwd;        # Get current working directory
 
-# Global settings variables
-our $insrc_proc = "\"srcml\\src2srcml.exe\""; 		# Run for each input_src
-our $input_proc = "java -jar \"xml-parser.jar\"";	# Run for each input file
-our $output_proc = "\"srcml\\srcml2src.exe\""; 		# Run on each output file
-our $outsrc_proc = "g++";							# Run on each output_src
-my $debug_flag = 0;									# If true, print commands
-													# instead of executing them.
+# Global variable used to store the root directory, this is updated
+# with the setrootdir command.
+our $root_dir = "";
+our $debug_flag = 0;
 
-# Step through input_src directory to convert source files to source xml 
-# files in the input directory.
-sub inputsrc_handler {
+# Set the root directory that will be used for the remaining operations
+# performed by the script.
+sub setrootdir {
 
-	# Get the root directory, first function arg
-    # and the current directory, second function
-    my $root_dir = $_[0];
-    my $cur_dir = $_[1];
-    my $path = "$root_dir\\input_src\\$cur_dir";
+	# Set root_dir to the first argument and exit
+	$root_dir = $_[0];
+	return;
+}
 
-    # If debugging print current dir
-    if($debug_flag == 1) { print "Current directory: $path\n"; }
-
-    # Open the current directory and read into array
-    opendir(DIR, $path) or die "Fatal Error: Couldn't open $path\n";
-    my @items = readdir(DIR);
-    closedir(DIR);
-
-    # Remove "." from path
-    if($cur_dir eq ".") { $path = "$root_dir\\input_src" };
-
-    foreach my $item (@items) {
-
-        # Skip the . and .. directories
-        next if($item =~ m/\.{1,2}$/);
-
-        # Recurse for directories
-        if(-d "$path\\$item") {
-
-            # Recurse down into the subdirectory, don't pass . or ..
-            if($cur_dir ne ".") {
-                inputsrc_handler($root_dir, "$cur_dir\\$item");
-            } else {
-                inputsrc_handler($root_dir, "$item");
-            }
-        }
-
-        # Handle xml files
-        if((-f "$path\\$item") && ($item =~ m/(\.cpp|\.h)$/)) {
-
-            # Example file name: array.cpp => array.cpp.xml
-            # Build corresponding input path, add ending .xml
-            my $insrc_path = "$root_dir\\input\\$cur_dir\\$item";
-			if($cur_dir eq ".") { $insrc_path = "$root_dir\\input\\$item"; }
-			$insrc_path = "$insrc_path.xml";
-            #$insrc_path =~ s/\.xml$//;
-
-            # Build command string
-            my $cmdstr = "$insrc_proc \"$path\\$item\" -o \"$insrc_path\"";
-
-            # If debug mode print, else run
-            if($debug_flag == 1) {
-                print "\t$cmdstr\n";
-            } else {
-                system($cmdstr);
-            }
-        }
-    }
-}									
-													
-# Step through input directory creating the proper directories in output and
-# output_src if they don't exist. Then run the input command on all xml files.
-sub input_handler {
-
-	# Get the root directory, first function arg
-	# and the current directory, second function
-	my $root_dir = $_[0];
-	my $cur_dir = $_[1];
-	my $path = "$root_dir\\input\\$cur_dir";
+# Synchronize the directory trees. This will walk down the directory tree
+# making sure all of the directories are in sync. It will sync as many
+# directories as you give it.
+# Usage syncdirs([master dir], [directories to sync]...)
+sub syncdirs {
 	
-	# If debugging print current dir
-	if($debug_flag == 1) { print "Current directory: $path\n"; }
+	# Check to make sure there are enough arguments
+	if(@_ < 2) { die("Syncdirs needs at least two arguments!\n"); }
 	
-	# Open the current directory and read into array
-	opendir(DIR, $path) or die "Fatal Error: Couldn't open $path\n";
-	my @items = readdir(DIR);
-	closedir(DIR);
+	# Build the master directory path
+	my $master_path = "$root_dir\\$_[0]";
+	if($debug_flag == 1) { print "Master Directory: $master_path\n"; }
 	
-	# Remove "." from path
-	if($cur_dir eq ".") { $path = "$root_dir\\input" };
+	# Build a list of slave directories, removing the master
+	my @slaves = splice @_, 1;
 	
-	# Loop through every item in the directory
+	# Open and read in
+	opendir(MASTER, $master_path) or die("Couldn't open master directory\n");
+	my @items = readdir(MASTER);
+	closedir(MASTER);
+	
+	# Loop through looking for directories
 	foreach my $item (@items) {
 	
 		# Skip the . and .. directories
-		next if($item =~ m/\.{1,2}$/);
-	
-		# Handle items that are files that end in .xml
-		if((-f "$path\\$item") && ($item =~ m/\.xml$/)) {
-			
-			# Form command string
-			my $cmdstr = "$input_proc \"$path\\$item\" \"$path\\$item\"";
-			
-			# If debug mode print, else run
-			if($debug_flag == 1) {
-				print "\t$cmdstr\n";
-			} else {
-				system($cmdstr);
-			}
-		} elsif(-d "$path\\$item") {
+		next if($item =~ m/^(\.|\.\.)$/);
 		
-			# Build output and output_src equivalents of this path
-			my $out_path = "$root_dir\\output\\$cur_dir\\$item";
-			my $outsrc_path = "$root_dir\\output_src\\$cur_dir\\$item";
+		# Check to see if it is a directory
+		if(-d "$master_path\\$item") {
 			
-			# Check to see if these items exist
-			if(!(-d $out_path)) {
+			# Print if in debug mode
+			if($debug_flag == 1){ print "\tFound Dir: $master_path\\$item\n"; }
+			
+			# Loop through the slave directories syncing if the directory 
+			# doesn't exist at the same time, create new slave list for 
+			# recursing
+			my @reclist = ();
+			foreach my $slave (@slaves) {
 				
-				# Make directory
-				mkdir $out_path or die "Can't create dir $out_path\n";
-			}
-			
-			if(!(-d $outsrc_path)) {
+				# Build string
+				my $tpath = "$root_dir\\$slave\\$item";
 				
-				# Make directory
-				mkdir $outsrc_path or die "Can't create dir $outsrc_path\n";
+				# Check if it exists
+				if(!(-d $tpath)) {
+				
+					# Create and print if in debug mode
+					mkdir($tpath) or die(
+						"Couldn't create directory: $tpath\n");
+					if($debug_flag == 1){
+						print "\t\tMissing dir created: $tpath\n"; }
+				}
+				
+				# Create new slave entry
+				push(@reclist, "$slave\\$item");
 			}
 			
-			# Recurse down into the subdirectory, don't pass . or ..
-			if($cur_dir ne ".") {
-				input_handler($root_dir, "$cur_dir\\$item");
-			} else {
-				input_handler($root_dir, "$item");
-			}
+			# Push master onto new list
+			unshift(@reclist, "$_[0]\\$item");
+			
+			# Recurse down to next level
+			syncdirs(@reclist);
 		}
 	}
 }
 
+# Handle the actual processing of the file.
+# This function uses REGEX to be more flexible
+# and user friendly. Read attached readme for help.
+sub procdir {
 
-# Step through the output directory processing all of the files in
-# output into their corresponding output_src files
-sub output_handler {
-
-	# Get the root directory, first function arg
-	# and the current directory, second function
-	my $root_dir = $_[0];
-	my $cur_dir = $_[1];
-	my $path = "$root_dir\\output\\$cur_dir";
+	# Split out input into vars
+	my $rawcmd = $_[0];
+	my $indir = "$root_dir\\$_[1]";
+	my $outdir = "$root_dir\\$_[2]";
+	my $outformat = $_[3];
+	my @lookfor = splice @_, 4;
 	
-	# If debugging print current dir
-	if($debug_flag == 1) { print "Current directory: $path\n"; }
-	
-	# Open the current directory and read into array
-	opendir(DIR, $path) or die "Fatal Error: Couldn't open $path\n";
+	# Read all the file in the indir
+	opendir(DIR, $indir) or die("Couldn't open $indir\n");
 	my @items = readdir(DIR);
 	closedir(DIR);
 	
-	# Remove "." from path
-	if($cur_dir eq ".") { $path = "$root_dir\\output" };
+	# Print if in debug
+	if($debug_flag == 1) { print "Now Processing: $indir\n"; }
 	
+	# Loop through each item
 	foreach my $item (@items) {
 		
 		# Skip the . and .. directories
-		next if($item =~ m/\.{1,2}$/);
+		next if($item =~ m/^(\.|\.\.)$/);
 		
-		# Recurse for directories
-		if(-d "$path\\$item") {
+		# Check if it is directory
+		if(-d "$indir\\$item") {
 		
-			# Recurse down into the subdirectory, don't pass . or ..
-			if($cur_dir ne ".") {
-				output_handler($root_dir, "$cur_dir\\$item");
-			} else {
-				output_handler($root_dir, "$item");
-			}
-		}
-		
-		# Handle xml files
-		if((-f "$path\\$item") && ($item =~ m/\.xml$/)) {
-
-		    # Example file name: array.cpp.xml
-			# Build corresponding output_src path, remove ending .xml
-			my $outsrc_path = "$root_dir\\output_src\\$cur_dir\\$item";
-			$outsrc_path =~ s/\.xml$//;
+			# Build recurse args
+			my @args = ();
+			push(@args, $_[0]);
+			push(@args, "$_[1]\\$item");
+			push(@args, "$_[2]\\$item");
+			push(@args, $_[3]);
+			push(@args, @lookfor);
 			
-			# Build command string
-			my $cmdstr = "$output_proc \"$path\\$item\" > \"$outsrc_path\"";
+			# Recurse
+			procdir(@args);
+			
+			# Print newline if in debug mode
+			if($debug_flag == 1) { print "\n\n"; }
+		}
+		elsif(-f "$indir\\$item") {
 		
-			# If debug mode print, else run
-			if($debug_flag == 1) {
-				print "\t$cmdstr\n";
-			} else {
-				system($cmdstr);
+			# Check to see if it is one of the valid file types
+			my $flag_valid = 0;
+			for(my $x = 0; $x < @lookfor; $x++) {
+			
+				if($item =~ m/$lookfor[$x]$/) { $flag_valid = 1; }
 			}
+			
+			# Next if not valid
+			next if ($flag_valid == 0);
+			
+			# Build the command string
+			$rawcmd =~ s/%INPUT_DIR%/$indir\\$item/;
+			
+			# Get the output root and extension
+			my @tmppts = split(/\./, reverse($item), 2);
+			my $root = reverse($tmppts[1]);
+			my $ext = reverse($tmppts[0]);
+			
+			# Build the output item
+			$outformat =~ s/%FILENAME%/$root/;
+			$outformat =~ s/%ORIGEXT%/$ext/;
+			
+			# Finish the command string
+			$rawcmd =~ s/%OUTPUT_DIR%/$outdir\\$outformat/;
+			
+			# Run the command or print it based on the debug flag
+			if($debug_flag == 1) {
+				print "\t\t$rawcmd\n";
+			} else {
+				system($rawcmd);
+			}
+			
+			# Refresh the edited variables for next run
+			$rawcmd = $_[0];
+			$outformat = $_[3];
 		}
 	}
 }
 
-# Step through the output_src directory, compiling all of the cpp files
-# found.
-sub outputsrc_handler {
 
-	# Get the root directory, first function arg
-	# and the current directory, second function
-	my $root_dir = $_[0];
-	my $cur_dir = $_[1];
-	my $path = "$root_dir\\output_src\\$cur_dir";
+# Runs the program
+sub main {
+
+    print "(1/6) Setting the root and syncing all subdirectories.\n";
+
+    # Set the root and create the directories
+    setrootdir(getcwd());
+    syncdirs("input_src", "input", "output", "output_src");
+
+    print "(2/6) Converting source files to .xml files.\n";
+
+    # Convert .cpp and .h files to .xml files
+    procdir("\"srcml\\src2srcml.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
+        "input_src", "input", "%FILENAME%.%ORIGEXT%.xml", ".cpp", ".h");
+
+    print "(3/6) Performing approximation on .xml files.\n";
+
+    # Perform approximation on .xml files
+    procdir("java -jar \"xml-parser.jar\" %INPUT_DIR% %OUTPUT_DIR%",
+        "input", "output", "%FILENAME%.%ORIGEXT%", ".xml");
+
+    print "(4/6) Converting .xml files to source files.\n";
+
+    # Convert .xml files to .cpp and .h files
+    procdir("\"srcml\\srcml2src.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
+        "output", "output_src", "%FILENAME%", ".xml");
+
+    print "(5/6) Compiling the source files.\n";
+
+    # Compile the .cpp files
+    system("g++ \"output_src\\*.cpp\" -o \"output_src\\scimark_v1.exe\"");
+
+    print "(6/6) Running the executable file.\n";
+
+    # Run the .exe
+    system("\"output_src\\scimark_v1.exe\" > \"output_src\\scimark_v1.txt\"");
 	
-	# If debugging print current dir
-	if($debug_flag == 1) { print "Current directory: $path\n"; }
+	print "Generating summary report.\n";
 	
-	# If debug mode print, else compile
-	my $cmdstr = "$outsrc_proc \"$path\\*.cpp\" -o \"$path\\scimark_v1.exe\"";
-	if($debug_flag == 1) {
-		print "\t$cmdstr\n";
-	} else {
-		system($cmdstr);
-	}
-	
-	# if debug mode print, else redirect results
-	$cmdstr = "\"$path\\scimark_v1.exe\" > \"$path\\scimark_v1.txt\"";
-	if($debug_flag == 1) {
-		print "\t$cmdstr\n";
-	} else {
-		system($cmdstr);
-	}
+	# Generate summary report
+	system("java -jar \"report-generator.exe\" 
+			\"results\\output.txt\" \"results\\summary,txt\"");
 }
 
-# Process the current working directory using the three functions.
-sub process_dir {
+main();
 
-	# Get current working directory to use as argument
-	my $cwd = getcwd();
-	$cwd =~ s/\//\\/g;
+# 1. file structure change
+# need to have it go through the directories in "results"
+# each directory in "results" is like "foo1", "foo2", "foo3"
+# each directory in "results" has "input", "input_src", "output", "output_src"
 
-	inputsrc_handler($cwd, ".");
-	input_handler($cwd, ".");
-	output_handler($cwd, ".");
-	outputsrc_handler($cwd, ".");
-}
+# 2. collect time usage results for exe in each "foo#"
+# set a timer with highest precision of accuracy possible before running exe (6/6)
+# get time after exe has been closed
+# write to output file named "summary" the end time for each directory in "results"
+# just the number, but document the units in the function
 
+# 3. collect memory usage results for exe in each "foo#"
+# write to output file named "summary" start and end memory usage
 
-# Run the main function.
-process_dir();
+# 4. write java code to parse the "summary" file to produce nicer output
+# make it an .exe
