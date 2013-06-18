@@ -14,6 +14,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * XMLParser.
+ * Main class for parsing the .xml files, calling methods to perform the
+ * approximation, and writing the output .xml files.
+ */
 public class XMLParser {
 	private static final String FILE_EXTENSION = ".xml";
 	private String inputXML, outputXML;
@@ -21,23 +26,41 @@ public class XMLParser {
 	private PrintWriter out;
 	private static final Boolean DEBUG = false; // print debug messages if true
 
-	public XMLParser(String inputXML, String outputXML) throws InterruptedException {
+	/**
+	 * Constructor.
+	 * @param inputXML input file
+	 * @param outputXML output file
+	 * @throws InterruptedException
+	 */
+	public XMLParser(String inputXML, String outputXML)
+												throws InterruptedException {
 		this.inputXML = inputXML;
 		this.outputXML = outputXML;
 
 		try {
-			input = new Scanner(new File(inputXML)); // directory, file
-		} catch (FileNotFoundException e) {
-			System.err.println("Usage: java xml-parser.java INPUT.xml OUTPUT.xml");
+			input = new Scanner(new File(inputXML));
+		} catch (FileNotFoundException fnfe) {
+			System.err.println(
+				"Usage: java xml-parser.java INPUT.xml OUTPUT.xml");
 			System.exit(0);
 		}
+
+		// run the program
 		run();
 	}
 
+	/**
+	 * Main function.
+	 * Checks the number of arguments and extensions of the files given in the
+	 * arguments before proceeding with the program.
+	 * @param args input/output file directories and names
+	 * @throws InterruptedException
+	 */
 	public static void main(String[] args) throws InterruptedException {
 		String fileExtension1, fileExtension2;
 		boolean status = false;
 
+		// check arguments
 		if(args.length == 2) {
 			fileExtension1 =
 				args[0].substring(args[0].length() - FILE_EXTENSION.length());
@@ -48,17 +71,24 @@ public class XMLParser {
 				status = true;
 		}
 
+		// did not pass check
 		if(!status) {
 			System.err.println("Usage: java xml-parser.java INPUT.xml OUTPUT.xml");
 			System.exit(0);
 		}
 
+		// passed check, proceed
 		new XMLParser(args[0], args[1]);
 	}
 
+	/**
+	 * Runs the program to parse the input file, call approximation function,
+	 * and call function to write the output.
+	 * @throws InterruptedException
+	 */
 	private void run() throws InterruptedException {
 		ArrayList<String> file = new ArrayList<String>();
-		ArrayList<String>[] results;
+		ArrayList[] results;
 
 		while(input.hasNextLine())
 			file.add(input.nextLine());
@@ -79,10 +109,18 @@ public class XMLParser {
 			System.out.println("Writing complete.");
 	}
 
-	private ArrayList<String>[] performApproximation(
+	/**
+	 * Perform approximation on input using the available strategies.
+	 *
+	 * @param file input to perform approximation.
+	 * @param find text to find.
+	 * @param replace text to replace.
+	 * @return results of approximation.
+	 */
+	private ArrayList[] performApproximation(
 			ArrayList<String> file, String find, String replace) {
 
-		ArrayList<String>[] results = new ArrayList[3];
+		ArrayList[] results = new ArrayList[3];
 
 		// create all strategy objects
 		ApproximationStrategy naive = new NaiveStrategy();
@@ -93,10 +131,12 @@ public class XMLParser {
 			System.out.println(
 					"\nPerforming approximation for " + inputXML + ".\n");
 
+		// store approximation results
 		results[0] = naive.approximate(file, find, replace);
 		results[1] = random.approximate(file, find, replace);
 		results[2] = loop.approximate(file, find, replace);
 
+		// print results if in debug mode
 		if(DEBUG) {
 			if(naive.getCount() == 1)
 				System.out.println("There was " + naive.getCount() +
@@ -129,6 +169,11 @@ public class XMLParser {
 		return results;
 	}
 
+	/**
+	 * Write the results to the output file supplied in the arguments when
+	 * the program was run.
+	 * @param result output to write to file.
+	 */
 	private void getOutFile(ArrayList<String> result) {
 		// produce unique file names
 		String filename =
@@ -140,17 +185,18 @@ public class XMLParser {
 		//String[] file = filename.split("input");
 		//filename = file[0] + "output" + file[1];
 
+		// create file writer
 		try {
-			File outFile = new File(filename);
-			outFile.getParentFile().mkdirs();
-			out = new PrintWriter(new FileWriter(outFile));
+			out = new PrintWriter(new FileWriter(new File(filename)));
 		} catch (IOException ioe) {
 			System.err.println("IOException: " +
 					"Could not create print writer for /output/" + filename);
 		}
+
+		// write to file
 		out.flush();
-		for(int i = 0; i < result.size(); i++)
-			out.write(result.get(i) + "\r\n");
+		for(String line : result)
+			out.write(line + "\r\n");
 		out.flush();
 		out.close();
 	}
