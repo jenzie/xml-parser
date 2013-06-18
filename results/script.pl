@@ -208,7 +208,7 @@ sub main {
 	print "Generating summary report.\n";
 	
 	# Generate summary report
-	system("java -jar \"report-generator.exe\" 
+	system("java -jar \"report-generator.jar\" 
 			\"results\\output.txt\" \"results\\summary,txt\"");
 }
 
