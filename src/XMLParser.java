@@ -73,7 +73,8 @@ public class XMLParser {
 
 		// did not pass check
 		if(!status) {
-			System.err.println("Usage: java xml-parser.java INPUT.xml OUTPUT.xml");
+			System.err.println(
+				"Usage: java xml-parser.java INPUT.xml OUTPUT.xml");
 			System.exit(0);
 		}
 
@@ -99,11 +100,9 @@ public class XMLParser {
 			System.out.println("\nWriting results to output directory.");
 
 		//Thread.sleep(1000);
-		getOutFile(results[0]);
-		//Thread.sleep(1000);
-		//getOutFile(results[1]);
-		//Thread.sleep(1000);
-		//getOutFile(results[2]);
+		getOutFile(results[0], 1);
+		getOutFile(results[1], 2);
+		getOutFile(results[2], 3);
 
 		if(DEBUG)
 			System.out.println("Writing complete.");
@@ -174,23 +173,23 @@ public class XMLParser {
 	 * the program was run.
 	 * @param result output to write to file.
 	 */
-	private void getOutFile(ArrayList<String> result) {
+	private void getOutFile(ArrayList<String> result, int strategy_id) {
 		// produce unique file names
-		String filename =
-			outputXML.substring(0, outputXML.length() - FILE_EXTENSION.length());
+		//String filename =
+		//	outputXML.substring(0, outputXML.length() - FILE_EXTENSION.length());
 		//SimpleDateFormat dateFormat =
 		//	new SimpleDateFormat("MMddHHmmss");
 		//filename += "_" + dateFormat.format(new Date()) + FILE_EXTENSION;
-		filename += FILE_EXTENSION;
-		//String[] file = filename.split("input");
-		//filename = file[0] + "output" + file[1];
+		String filename = outputXML;
+		String[] file = filename.split("output");
+		filename = file[0] + "output_" + strategy_id + file[1];
 
 		// create file writer
 		try {
 			out = new PrintWriter(new FileWriter(new File(filename)));
 		} catch (IOException ioe) {
 			System.err.println("IOException: " +
-					"Could not create print writer for /output/" + filename);
+					"Could not create print writer for " + filename);
 		}
 
 		// write to file
