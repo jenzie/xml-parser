@@ -100,6 +100,7 @@ public class XMLParser {
 			System.out.println("\nWriting results to output directory.");
 
 		//Thread.sleep(1000);
+		createDirectories(results.length);
 		getOutFile(results[0], 1);
 		getOutFile(results[1], 2);
 		getOutFile(results[2], 3);
@@ -198,5 +199,25 @@ public class XMLParser {
 			out.write(line + "\r\n");
 		out.flush();
 		out.close();
+	}
+
+	private void createDirectories(int numStrategies) {
+		String path = outputXML;
+		String[] file = path.split("output");
+		File dir;
+
+		for(int i = 1; i <= numStrategies; i++) {
+			path = file[0] + "output_" + i;
+			dir = new File(path);
+
+			// create directory, if it does not exist
+			if(!dir.exists()) {
+				if(!dir.mkdir()) {
+					System.err.println(
+						"Error: Unable to create directory: " + path);
+					System.exit(0);
+				}
+			}
+		}
 	}
 }
