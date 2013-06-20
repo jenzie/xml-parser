@@ -39,6 +39,7 @@ public class RandomStrategy implements ApproximationStrategy {
 	public ArrayList<String> approximate(
 			ArrayList<String> file, String find, String replace) {
 
+		replace = "(" + replace + ") " + find;
 		ArrayList<String> result = new ArrayList<String>();
 		ArrayList<String> indices = this.countTotal(file, find);
 
