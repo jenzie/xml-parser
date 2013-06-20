@@ -287,7 +287,9 @@ sub main {
 		}
 	}
 }
+
 monexec("notepad.exe", ".\\summary.txt") and exit;
+
 #main();
 
 # 1. file structure change
