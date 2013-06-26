@@ -8,3 +8,40 @@ excel
 	general comments
 	compilable?
 	executes correctly?`
+
+benchmarks
+    C
+        atlas
+        ffdshow
+        freedroid
+        grisbi
+        net-snmp
+        pnotes
+        sdcc
+        tcl
+        winscp
+        xbmc
+
+    C++
+        7zip
+        audacity
+        dvdstyler
+        hugin
+        mediainfo
+        mumble
+        npp
+        ogre
+        postbooks
+        scummvm
+
+    Java
+        adempiere
+        arianne
+        freecol
+        jedit
+        jmri
+        jtds
+        openbravo
+        rssowl
+        sweethome3d
+        zk
