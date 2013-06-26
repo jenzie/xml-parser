@@ -1,0 +1,38 @@
+Issues with XML Input
+
+- Keeping track of locations of variables.
+	- Currently, the first strategy changes all variables. There was no 
+	  need to store a list of locations for each variable declared.
+	- Strategies that change some/all instances of some/all variables 
+	  require storing location information in a manageable way.
+	- Whitespace, newlines, and tabs still need preservation.
+	- May use a flyweight: the flyweight is a HashMap, where the key is the 
+	  integer index and value is the string (tag or text between tag). The 
+	  structure is preserved through a 2D Integer ArrayList.
+		The first dimension is the line, the second is the individual 
+		elements in each line.
+	- Lowers amount of memory for larger files.
+	- O(1) lookup times for each line.
+
+- XML tags generated from language specific capabilities.
+	Example:
+		array.cpp.xml (line 16)
+			- Functions: malloc, sizeof.
+			- May interpret as 3 variables of type double, 
+			  but there is only one.
+			- Dependency: If **A is changed to a different type,
+			  the two proceeding "double" types also need to be changed.
+			- Can use a dependency tree: if the children (leaf) are changed,
+			  then the parents also need to be changed.
+			- Alternatively, use a queue: push onto the queue every time 
+			  a new dependency is found.
+			- State pattern: one state per language; language specific 
+			  features are placed into the state.
+			
+- Repeated variable declarations.
+	Example:
+		array.cpp.xml (lines 13, 47, 61)
+			- Need to associate variable names with scope (local/global).
+			- Changing all instances of variable, i, for one specific function 
+			  should not change all instances of i in the file.
+			- Need to keep track of function tags.

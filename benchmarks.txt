@@ -1,0 +1,10 @@
+excel
+	benchmark
+	size of benchmark
+	input format
+	output format
+	language
+	platform
+	general comments
+	compilable?
+	executes correctly?`
