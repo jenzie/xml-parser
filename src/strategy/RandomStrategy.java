@@ -14,6 +14,7 @@ import java.util.Random;
 
 public class RandomStrategy implements ApproximationStrategy {
 	private ArrayList<ArrayList<String>> parsedFile;
+	private HashMap existing_variables;
 	private int count;
 	private int totalCount;
 
@@ -76,6 +77,7 @@ public class RandomStrategy implements ApproximationStrategy {
 
 	public ArrayList<String> countTotal(ArrayList<String> file, String find) {
 		this.parsedFile = new ArrayList<ArrayList<String>>();
+		this.existing_variables = new HashMap();
 		ArrayList<String> indices = new ArrayList<String>();
 		String[] tempPiece, tempLine;
 		String tempResult;
@@ -103,6 +105,7 @@ public class RandomStrategy implements ApproximationStrategy {
 						tempPiece[j] = tempPiece[j] + ">";
 
 					index++;
+					System.out.println(tempPiece[j]);
 					entry.add(tempPiece[j]);
 					if(tempPiece[j].equals(find)) {
 						this.totalCount++;
