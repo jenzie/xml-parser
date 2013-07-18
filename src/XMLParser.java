@@ -100,10 +100,10 @@ public class XMLParser {
 			System.out.println("\nWriting results to output directory.");
 
 		//Thread.sleep(1000);
-		createDirectories(results.length);
+		// createDirectories(results.length);
 		getOutFile(results[0], 1);
-		getOutFile(results[1], 2);
-		getOutFile(results[2], 3);
+		// getOutFile(results[1], 2);
+		// getOutFile(results[2], 3);
 
 		if(DEBUG)
 			System.out.println("Writing complete.");
@@ -133,8 +133,8 @@ public class XMLParser {
 
 		// store approximation results
 		results[0] = naive.approximate(file, find, replace);
-		results[1] = random.approximate(file, find, replace);
-		results[2] = loop.approximate(file, find, replace);
+		// results[1] = random.approximate(file, find, replace);
+		// results[2] = loop.approximate(file, find, replace);
 
 		// print results if in debug mode
 		if(DEBUG) {
