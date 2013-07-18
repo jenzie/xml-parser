@@ -235,7 +235,7 @@ sub main {
 	print "(1/6) Setting the root and syncing all subdirectories.\n";
 
 	# Change to the results directory and setrootdir
-	chdir("results") or die("Couldn't change to results directory!\n");
+	# chdir("results") or die("Couldn't change to results directory!\n");
 	setrootdir(getcwd());
 	my $path_root = getcwd();
 	
@@ -257,13 +257,9 @@ sub main {
 	
 	# Loop through every output directory pair and process them
 	print "(3/6) Performing approximation on .xml files.\n";
-	my $pos = 1;
-	while(-d "$path_root\\output_$pos") {
-	
-		# Perform approximation on .xml files
-		procdir("java -jar \"xml-parser.jar\" %INPUT_DIR% %OUTPUT_DIR%",
-    	"input", "output", "%FILENAME%.%ORIGEXT%", ".xml");
-	}
+	# Perform approximation on .xml files
+	procdir("java -jar \"xml-parser.jar\" %INPUT_DIR% %OUTPUT_DIR%",
+		"input", "output", "%FILENAME%.%ORIGEXT%", ".xml");
 	
 	# Loop through every output directory pair and process them
 	print "(4/6) Converting .xml files to source files.\n";
@@ -272,25 +268,28 @@ sub main {
 
     	# Convert .xml files to .cpp and .h files
     	procdir("\"srcml\\srcml2src.exe\" %INPUT_DIR% -o %OUTPUT_DIR%",
-        	"$path_root\\output_$pos", "$path_root\\output_src_$pos", "%FILENAME%", ".xml");
+        	"output_$pos", "output_src_$pos", "%FILENAME%", ".xml");
+		$pos++;
 	}
 	
 	# Loop through every output directory pair and process them
 	print "(5/6) Compiling the source files.\n";
-	my $pos = 1;
+	$pos = 1;
 	while(-d "$path_root\\output_$pos") {
 
     	# Compile the .cpp files
     	system("g++ \"$path_root\\output_src_$pos\\*.cpp\" -o \"$path_root\\output_src_$pos\\scimark_v1.exe\"");
+		$pos++;
 	}
 	
 	# Loop through every output directory pair and process them
 	print "(6/6) Running the executable file.\n";
-	my $pos = 1;
+	$pos = 1;
 	while(-d "$path_root\\output_$pos") {
 
     	# Run the .exe
     	monexec("\"$path_root\\output_src_$pos\\scimark_v1.exe\" > \"$path_root\\output_src_$pos\\scimark_v1.txt\"");
+		$pos++;
 	}
 }
 
@@ -317,3 +316,6 @@ main();
 
 # 4. write java code to parse the "summary" file to produce nicer output
 # make it an .exe
+
+#############
+# Need to update method for synching directories for new file structure

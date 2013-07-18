@@ -1,1 +1,6 @@
-"scimark_v1.exe" > "scimark_v1.txt":
+notepad.exe:
+	1372258485
+	1372258488
+	5732
+	5738
+	5752

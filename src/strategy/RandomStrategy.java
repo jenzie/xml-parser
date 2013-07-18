@@ -105,7 +105,7 @@ public class RandomStrategy implements ApproximationStrategy {
 						tempPiece[j] = tempPiece[j] + ">";
 
 					index++;
-					System.out.println(tempPiece[j]);
+					//System.out.println(tempPiece[j]);
 					entry.add(tempPiece[j]);
 					if(tempPiece[j].equals(find)) {
 						this.totalCount++;

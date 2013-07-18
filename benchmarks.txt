@@ -7,7 +7,7 @@ excel
 	platform
 	general comments
 	compilable?
-	executes correctly?`
+	executes correctly?
 
 benchmarks
     C
